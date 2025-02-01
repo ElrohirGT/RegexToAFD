@@ -1,4 +1,6 @@
-package shunyard
+package main
+
+import "./lib"
 
 var precedence = map[string]int{
 	"+": 1,
@@ -6,6 +8,12 @@ var precedence = map[string]int{
 	"*": 3,
 }
 
+type Operator int
+
+const (
+	OR Operator = iota
+)
+
 func ToPostfix(infixExpression string) string {
-	operators := Stack[string]{}
+	return "not implemented"
 }

@@ -1,4 +1,4 @@
-package shunyard
+package lib
 
 import "testing"
 
