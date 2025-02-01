@@ -1,6 +1,7 @@
 package main
 
-import "./lib"
+// To import modules you can use the module name with the path to the module
+// import "github.com/ElrohirGT/RegexToAFD/lib"
 
 var precedence = map[string]int{
 	"+": 1,
