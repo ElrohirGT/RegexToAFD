@@ -15,6 +15,14 @@ func test(t *testing.T, info testInfo) {
 	}
 }
 
+func TestSimple(t *testing.T) {
+	regexp := "a+b"
+	test(t, testInfo{
+		input:    regexp,
+		expected: "ab+",
+	})
+}
+
 func TestPasswordPolicy(t *testing.T) {
 	regexp := "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$"
 

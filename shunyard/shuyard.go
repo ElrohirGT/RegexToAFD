@@ -7,5 +7,5 @@ var precedence = map[string]int{
 }
 
 func ToPostfix(infixExpression string) string {
-	return "not implemented yet"
+	operators := Stack[string]{}
 }
