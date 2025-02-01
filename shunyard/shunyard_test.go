@@ -50,3 +50,12 @@ func TestMatchAmericanNumber(t *testing.T) {
 		expected: "",
 	})
 }
+
+func TestPrinceRegexp(t *testing.T) {
+	regexp := "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+
+	test(t, testInfo{
+		input:    regexp,
+		expected: "",
+	})
+}
