@@ -11,5 +11,10 @@ var precedence = map[string]int{
 }
 
 func ToPostfix(infixExpression string) []l.RX_Token {
-	return []l.CreateValueToken("")
+	input := ""
+	output := []l.RX_Token{
+		l.CreateValueToken(&input),
+	}
+
+	return output
 }
