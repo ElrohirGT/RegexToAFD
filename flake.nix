@@ -2,7 +2,7 @@
   description = "Simple Go Package";
 
   # Nixpkgs / NixOS version to use.
-  inputs.nixpkgs.url = "nixpkgs/unstable";
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
   outputs = {
     self,
