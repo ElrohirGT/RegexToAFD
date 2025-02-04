@@ -18,6 +18,8 @@ var precedence = map[rune]int{
 }
 
 func toOperator(self rune) l.Optional[l.Operator] {
+	log.Default().Printf("Trying to get operator from: %c", self)
+
 	switch self {
 	case '|':
 		return l.CreateValue(l.OR)
@@ -95,6 +97,17 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				tryToAppendWithPrecedence(&stack, char, &output)
 			}
 			previousCanBeANDedTo = true
+
+		case '(':
+			stack.Push('(')
+
+		case ')':
+			for peeked := stack.Peek(); peeked.GetValue() != '(' && !stack.Empty(); peeked = stack.Peek() {
+				val := stack.Pop()
+				op := toOperator(val.GetValue()).GetValue()
+
+				output = append(output, l.CreateOperatorToken(op))
+			}
 
 		default:
 			if previousCanBeANDedTo && i != 0 {
