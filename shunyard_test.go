@@ -81,7 +81,65 @@ func TestOptional(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 		},
 	})
+
+	regexp = "ab?c"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.ONE_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.AND),
+		},
+	})
 }
+
+func TestZeroOrMore(t *testing.T) {
+	regexp := "abc?"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.AND),
+		},
+	})
+
+	regexp = "ab?c"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.AND),
+		},
+	})
+}
+
+// func TestParenthesis(t *testing.T) {
+// 	regexp := "b|(a*bc)"
+// 	test(t, testInfo{
+// 		input: regexp,
+// 		expected: []lib.RX_Token{
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateOperatorToken(lib.AND),
+// 			lib.CreateValueToken('c'),
+// 			lib.CreateOperatorToken(lib.AND),
+// 			lib.CreateOperatorToken(lib.OR),
+// 		},
+// 	})
+// }
 
 // func TestRanges(t *testing.T) {
 // 	regexp := "[a-c]"

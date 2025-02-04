@@ -25,6 +25,8 @@ func toOperator(self rune) l.Optional[l.Operator] {
 		return l.CreateValue(l.AND)
 	case '?':
 		return l.CreateValue(l.ONE_OR_MANY)
+	case '*':
+		return l.CreateValue(l.ZERO_OR_MANY)
 	default:
 		return l.CreateNull[l.Operator]()
 	}
@@ -32,6 +34,7 @@ func toOperator(self rune) l.Optional[l.Operator] {
 
 func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.RX_Token) {
 	if stack.Empty() {
+		log.Default().Printf("Adding %c to stack!", operator)
 		stack.Push(operator)
 		return
 	}
@@ -72,26 +75,35 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 	stack := l.Stack[rune]{}
 	output := []l.RX_Token{}
 
-	previousCharWasNotOperator := true
+	previousCanBeANDedTo := true
 	for i, char := range infixExpression {
 		switch char {
-		case '|', '?':
+		case '|':
 			if stack.Empty() {
 				log.Default().Printf("Adding %c to stack!", char)
 				stack.Push(char)
 			} else {
 				tryToAppendWithPrecedence(&stack, char, &output)
 			}
-			previousCharWasNotOperator = false
+			previousCanBeANDedTo = false
+
+		case '?', '*':
+			if stack.Empty() {
+				log.Default().Printf("Adding %c to stack!", char)
+				stack.Push(char)
+			} else {
+				tryToAppendWithPrecedence(&stack, char, &output)
+			}
+			previousCanBeANDedTo = true
 
 		default:
-			if previousCharWasNotOperator && i != 0 {
+			if previousCanBeANDedTo && i != 0 {
 				log.Default().Printf("Trying to append '.' operator...")
 				tryToAppendWithPrecedence(&stack, '.', &output)
 			}
 			log.Default().Printf("Adding %c to output...", char)
 			output = append(output, l.CreateValueToken(char))
-			previousCharWasNotOperator = true
+			previousCanBeANDedTo = true
 		}
 	}
 
