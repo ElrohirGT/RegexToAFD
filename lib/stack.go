@@ -2,17 +2,33 @@ package lib
 
 type Stack[T any] []T
 
+func (self *Stack[T]) Peek() Optional[T] {
+	idx := len(*self) - 1
+	ref := *self
+
+	if idx < 0 {
+		return CreateNull[T]()
+	}
+
+	return CreateValue(ref[idx])
+}
+
 func (self *Stack[T]) Push(val T) *Stack[T] {
 	*self = append(*self, val)
 	return self
 }
 
-func (self *Stack[T]) Pop() T {
-	length := len(*self)
-
+func (self *Stack[T]) Pop() Optional[T] {
 	ref := *self
-	val := ref[length-1]
-	*self = ref[:length-1]
+	length := len(ref)
+	idx := length - 1
 
-	return val
+	if idx < 0 {
+		return CreateNull[T]()
+	}
+
+	val := ref[idx]
+	*self = ref[:idx]
+
+	return CreateValue(val)
 }

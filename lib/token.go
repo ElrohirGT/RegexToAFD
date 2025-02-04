@@ -3,7 +3,11 @@ package lib
 type Operator int
 
 const (
-	OR Operator = iota
+	OR           Operator = iota // This OR that operator.
+	AND                          // Concatenation operator.
+	RANGE                        // When we write {1,5}
+	ONE_OR_MANY                  // ? Operator
+	ZERO_OR_MANY                 // * Operator
 )
 
 // Represents a token.
@@ -14,14 +18,18 @@ type RX_Token struct {
 	value    *string
 }
 
-func CreateOperatorToken(t *Operator) RX_Token {
+func CreateOperatorToken(t Operator) RX_Token {
 	return RX_Token{
-		operator: t,
+		operator: &t,
 	}
 }
 
-func CreateValueToken(value *string) RX_Token {
+func CreateValueToken(value string) RX_Token {
 	return RX_Token{
-		value: value,
+		value: &value,
 	}
+}
+
+func (self RX_Token) Equals(other RX_Token) bool {
+	return self.operator == other.operator && self.value == other.value
 }

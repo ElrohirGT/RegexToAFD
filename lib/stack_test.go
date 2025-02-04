@@ -10,13 +10,13 @@ func TestStack(t *testing.T) {
 		Push(100).
 		Push(150)
 
-	if val := stack.Pop(); val != 150 {
-		t.Fatalf("150 != %d", val)
+	if val := stack.Pop(); val.GetValue() != 150 {
+		t.Fatalf("150 != %d", val.GetValue())
 	}
-	if val := stack.Pop(); val != 100 {
-		t.Fatalf("100 != %d", val)
+	if val := stack.Pop(); val.GetValue() != 100 {
+		t.Fatalf("100 != %d", val.GetValue())
 	}
-	if val := stack.Pop(); val != 50 {
-		t.Fatalf("50 != %d", val)
+	if val := stack.Pop(); val.GetValue() != 50 {
+		t.Fatalf("50 != %d", val.GetValue())
 	}
 }
