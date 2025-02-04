@@ -54,19 +54,19 @@ func TestSimpleAnd(t *testing.T) {
 	})
 }
 
-// func TestSimpleCombination(t *testing.T) {
-// 	regexp := "a|bc"
-// 	test(t, testInfo{
-// 		input: regexp,
-// 		expected: []lib.RX_Token{
-// 			lib.CreateValueToken('a'),
-// 			lib.CreateValueToken('b'),
-// 			lib.CreateValueToken('c'),
-// 			lib.CreateOperatorToken(lib.AND),
-// 			lib.CreateOperatorToken(lib.OR),
-// 		},
-// 	})
-// }
+func TestSimpleCombination(t *testing.T) {
+	regexp := "a|bc"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.OR),
+		},
+	})
+}
 
 // func TestOptional(t *testing.T) {
 // 	regexp := "abc?"
