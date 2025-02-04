@@ -139,6 +139,20 @@ func TestParenthesis(t *testing.T) {
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
+
+	regexp = "b|(ac)|o"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('o'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+	})
 }
 
 // func TestRanges(t *testing.T) {

@@ -102,12 +102,16 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 			stack.Push('(')
 
 		case ')':
-			for peeked := stack.Peek(); peeked.GetValue() != '(' && !stack.Empty(); peeked = stack.Peek() {
+			log.Default().Printf("Popping until it finds: '('")
+			for peeked := stack.Peek(); peeked.GetValue() != '('; peeked = stack.Peek() {
 				val := stack.Pop()
 				op := toOperator(val.GetValue()).GetValue()
 
 				output = append(output, l.CreateOperatorToken(op))
 			}
+
+			// Popping '('
+			stack.Pop()
 
 		default:
 			if previousCanBeANDedTo && i != 0 {
