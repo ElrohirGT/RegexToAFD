@@ -11,7 +11,7 @@ var precedence = map[rune]int{
 	'?': 3, // ONE_OR_MORE
 }
 
-func ToOperator(self rune) l.Optional[l.Operator] {
+func toOperator(self rune) l.Optional[l.Operator] {
 	switch self {
 	case '|':
 		return l.CreateValue(l.OR)
@@ -27,23 +27,50 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 	for _, char := range infixExpression {
 		switch char {
 		case '|':
+			if stack.Empty() {
+				stack.Push(char)
+				continue
+			}
+
 			top := stack.Peek()
 			currentPrecedence := precedence[char]
-			stackPrecedence, found := precedence[top]
+			// Since the stack is not empty, top can't be null!
+			stackPrecedence, found := precedence[top.GetValue()]
 
 			if !found || stackPrecedence > currentPrecedence {
 				stack.Push(char)
 			} else {
 				for stackPrecedence < currentPrecedence {
 					poppedRune := stack.Pop()
-					output = append(output, l.CreateOperatorToken())
+
+					op := toOperator(poppedRune.GetValue())
+					output = append(output, l.CreateOperatorToken(op.GetValue()))
+
+					if stack.Empty() {
+						break
+					}
+
+					top := stack.Peek()
+					stackPrecedence, found = precedence[top.GetValue()]
+					if !found {
+						break
+					}
 				}
 			}
 
 		default:
-			output = append(output, l.CreateValueToken(string(char)))
+			output = append(output, l.CreateValueToken(char))
 		}
 
+	}
+
+	for !stack.Empty() {
+		val := stack.Pop()
+		op := toOperator(val.GetValue())
+
+		if op.HasValue() {
+			output = append(output, l.CreateOperatorToken(op.GetValue()))
+		}
 	}
 
 	return output

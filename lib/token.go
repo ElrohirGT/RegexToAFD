@@ -15,7 +15,7 @@ const (
 // If value is null then it should have an operator value, otherwise a value should be provided!
 type RX_Token struct {
 	operator *Operator
-	value    *string
+	value    *rune
 }
 
 func CreateOperatorToken(t Operator) RX_Token {
@@ -24,7 +24,7 @@ func CreateOperatorToken(t Operator) RX_Token {
 	}
 }
 
-func CreateValueToken(value string) RX_Token {
+func CreateValueToken(value rune) RX_Token {
 	return RX_Token{
 		value: &value,
 	}

@@ -2,6 +2,10 @@ package lib
 
 type Stack[T any] []T
 
+func (self *Stack[T]) Empty() bool {
+	return len(*self) == 0
+}
+
 func (self *Stack[T]) Peek() Optional[T] {
 	idx := len(*self) - 1
 	ref := *self

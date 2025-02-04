@@ -11,19 +11,21 @@ type testInfo struct {
 func test(t *testing.T, info testInfo) {
 	result := ToPostfix(info.input)
 
+	resultLength := len(result)
+	expectedLength := len(info.expected)
+	if expectedLength != resultLength {
+		t.Fatalf("The lengths don't match! %d != %d\nResult: %+v\nExpected: %+v\nFailed on: %s",
+			expectedLength, resultLength, result, info.expected, info.input)
+	}
+
 	for i, expected := range info.expected {
 		value := result[i]
 
 		if expected.Equals(value) {
-			t.Fatalf("The result doesn't match expected!\n%v != %v", expected, value)
+			t.Fatalf("The result doesn't match expected!\n%v != %v\nFailed on: %s", expected, value, info.input)
 		}
 	}
 
-	resultLength := len(result)
-	expectedLength := len(info.expected)
-	if expectedLength != resultLength {
-		t.Fatalf("The lengths don't match! %d != %d", expectedLength, resultLength)
-	}
 }
 
 func TestSimple(t *testing.T) {
@@ -31,8 +33,8 @@ func TestSimple(t *testing.T) {
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
-			lib.CreateValueToken("a"),
-			lib.CreateValueToken("b"),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
@@ -41,9 +43,9 @@ func TestSimple(t *testing.T) {
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
-			lib.CreateValueToken("a"),
-			lib.CreateValueToken("b"),
-			lib.CreateValueToken("c"),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
@@ -53,9 +55,9 @@ func TestSimple(t *testing.T) {
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
-			lib.CreateValueToken("a"),
-			lib.CreateValueToken("b"),
-			lib.CreateValueToken("c"),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.OR),
 		},
@@ -65,9 +67,9 @@ func TestSimple(t *testing.T) {
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
-			lib.CreateValueToken("a"),
-			lib.CreateValueToken("b"),
-			lib.CreateValueToken("c"),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.ONE_OR_MANY),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
@@ -81,10 +83,10 @@ func TestRanges(t *testing.T) {
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
-			lib.CreateValueToken("a"),
-			lib.CreateValueToken("b"),
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.OR),
-			lib.CreateValueToken("c"),
+			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
