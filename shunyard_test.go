@@ -68,20 +68,20 @@ func TestSimpleCombination(t *testing.T) {
 	})
 }
 
-// func TestOptional(t *testing.T) {
-// 	regexp := "abc?"
-// 	test(t, testInfo{
-// 		input: regexp,
-// 		expected: []lib.RX_Token{
-// 			lib.CreateValueToken('a'),
-// 			lib.CreateValueToken('b'),
-// 			lib.CreateValueToken('c'),
-// 			lib.CreateOperatorToken(lib.ONE_OR_MANY),
-// 			lib.CreateOperatorToken(lib.AND),
-// 			lib.CreateOperatorToken(lib.AND),
-// 		},
-// 	})
-// }
+func TestOptional(t *testing.T) {
+	regexp := "abc?"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.ONE_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.AND),
+		},
+	})
+}
 
 // func TestRanges(t *testing.T) {
 // 	regexp := "[a-c]"

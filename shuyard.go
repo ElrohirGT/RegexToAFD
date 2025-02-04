@@ -8,11 +8,13 @@ import (
 	l "github.com/ElrohirGT/RegexToAFD/lib"
 )
 
+// Maps an operator in the form of a rune into a precedence number.
+// Smaller means it has more priority
 var precedence = map[rune]int{
-	'|': 1, // OR Operator
+	'|': 2, // OR Operator
 	'.': 2, // AND Operator
-	'*': 3, // ZERO_OR_MORE
-	'?': 3, // ONE_OR_MORE
+	'*': 1, // ZERO_OR_MORE
+	'?': 1, // ONE_OR_MORE
 }
 
 func toOperator(self rune) l.Optional[l.Operator] {
@@ -21,6 +23,8 @@ func toOperator(self rune) l.Optional[l.Operator] {
 		return l.CreateValue(l.OR)
 	case '.':
 		return l.CreateValue(l.AND)
+	case '?':
+		return l.CreateValue(l.ONE_OR_MANY)
 	default:
 		return l.CreateNull[l.Operator]()
 	}
@@ -36,7 +40,9 @@ func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.
 	currentPrecedence := precedence[operator]
 	stackPrecedence, found := precedence[top.GetValue()]
 
+	log.Default().Printf("Checking if it can add operator directly %d > %d...", stackPrecedence, currentPrecedence)
 	if !found || stackPrecedence > currentPrecedence {
+		log.Default().Printf("Adding %c to stack!", operator)
 		stack.Push(operator)
 	} else {
 		for stackPrecedence < currentPrecedence {
@@ -57,6 +63,7 @@ func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.
 			}
 		}
 
+		log.Default().Printf("Adding %c to stack!", operator)
 		stack.Push(operator)
 	}
 }
@@ -68,7 +75,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 	previousCharWasNotOperator := true
 	for i, char := range infixExpression {
 		switch char {
-		case '|':
+		case '|', '?':
 			if stack.Empty() {
 				log.Default().Printf("Adding %c to stack!", char)
 				stack.Push(char)
