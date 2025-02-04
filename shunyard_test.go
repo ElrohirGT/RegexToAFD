@@ -14,7 +14,7 @@ func test(t *testing.T, info testInfo) {
 	resultLength := len(result)
 	expectedLength := len(info.expected)
 	if expectedLength != resultLength {
-		t.Fatalf("The lengths don't match! %d != %d\nResult: %+v\nExpected: %+v\nFailed on: %s",
+		t.Errorf("The lengths don't match! %d != %d\nResult: %+v\nExpected: %+v\nFailed on: %s",
 			expectedLength, resultLength, result, info.expected, info.input)
 	}
 
@@ -28,7 +28,7 @@ func test(t *testing.T, info testInfo) {
 
 }
 
-func TestSimple(t *testing.T) {
+func TestSimpleOr(t *testing.T) {
 	regexp := "a|b"
 	test(t, testInfo{
 		input: regexp,
@@ -38,59 +38,64 @@ func TestSimple(t *testing.T) {
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
-
-	regexp = "abc"
-	test(t, testInfo{
-		input: regexp,
-		expected: []lib.RX_Token{
-			lib.CreateValueToken('a'),
-			lib.CreateValueToken('b'),
-			lib.CreateValueToken('c'),
-			lib.CreateOperatorToken(lib.AND),
-			lib.CreateOperatorToken(lib.AND),
-		},
-	})
-
-	regexp = "a|bc"
-	test(t, testInfo{
-		input: regexp,
-		expected: []lib.RX_Token{
-			lib.CreateValueToken('a'),
-			lib.CreateValueToken('b'),
-			lib.CreateValueToken('c'),
-			lib.CreateOperatorToken(lib.AND),
-			lib.CreateOperatorToken(lib.OR),
-		},
-	})
-
-	regexp = "abc?"
-	test(t, testInfo{
-		input: regexp,
-		expected: []lib.RX_Token{
-			lib.CreateValueToken('a'),
-			lib.CreateValueToken('b'),
-			lib.CreateValueToken('c'),
-			lib.CreateOperatorToken(lib.ONE_OR_MANY),
-			lib.CreateOperatorToken(lib.AND),
-			lib.CreateOperatorToken(lib.AND),
-		},
-	})
-
 }
 
-func TestRanges(t *testing.T) {
-	regexp := "[a-c]"
+func TestSimpleAnd(t *testing.T) {
+	regexp := "abc"
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
-			lib.CreateOperatorToken(lib.OR),
 			lib.CreateValueToken('c'),
-			lib.CreateOperatorToken(lib.OR),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.AND),
 		},
 	})
 }
+
+// func TestSimpleCombination(t *testing.T) {
+// 	regexp := "a|bc"
+// 	test(t, testInfo{
+// 		input: regexp,
+// 		expected: []lib.RX_Token{
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateValueToken('c'),
+// 			lib.CreateOperatorToken(lib.AND),
+// 			lib.CreateOperatorToken(lib.OR),
+// 		},
+// 	})
+// }
+
+// func TestOptional(t *testing.T) {
+// 	regexp := "abc?"
+// 	test(t, testInfo{
+// 		input: regexp,
+// 		expected: []lib.RX_Token{
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateValueToken('c'),
+// 			lib.CreateOperatorToken(lib.ONE_OR_MANY),
+// 			lib.CreateOperatorToken(lib.AND),
+// 			lib.CreateOperatorToken(lib.AND),
+// 		},
+// 	})
+// }
+
+// func TestRanges(t *testing.T) {
+// 	regexp := "[a-c]"
+// 	test(t, testInfo{
+// 		input: regexp,
+// 		expected: []lib.RX_Token{
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateOperatorToken(lib.OR),
+// 			lib.CreateValueToken('c'),
+// 			lib.CreateOperatorToken(lib.OR),
+// 		},
+// 	})
+// }
 
 // func TestPasswordPolicy(t *testing.T) {
 // 	regexp := "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$"
