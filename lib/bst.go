@@ -2,7 +2,7 @@ package lib
 
 type BSTNode struct {
     Key int 
-    Val interface{}
+    Val *rune
     left *BSTNode
     right *BSTNode
 }
@@ -15,19 +15,19 @@ func (b *BST) Insert(n *BSTNode) {
     b.root = b.root.insert(n)
 }
 
-func (b *BSTNode) insert(n *BSTNode) {
+func (b *BSTNode) insert(n *BSTNode) *BSTNode {
     if b == nil {
-        reutrn n
+        return n
     }
     if n.Key < b.Key {
         b.left = b.left.insert(n)
-    } else if n.Key > b.key {
+    } else if n.Key > b.Key {
         b.right = b.right.insert(n)
     }
     return b
 }
 
-func (b *BST) List() []*Node {
+func (b *BST) List() []*BSTNode {
     ret := []*BSTNode{}
     stack := []*BSTNode{}
     current := b.root
@@ -45,4 +45,9 @@ func (b *BST) List() []*Node {
     return ret
 }
 
-
+func (b *BST) insertion(postfix []RX_Token){
+    for i, v := range postfix {
+        node := &BSTNode{Key: i, Val: v.value}
+        b.Insert(node)
+    }
+}
