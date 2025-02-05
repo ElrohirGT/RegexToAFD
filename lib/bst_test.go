@@ -3,11 +3,10 @@ package lib
 import "testing"
 
 func TestBST(t *testing.T) {
-    r1, r2, r3 := '1', 'a', 'c'
     nodes := []*BSTNode{
-        {Key: 1, Val: &r1},
-        {Key: 2, Val: &r2},
-        {Key: 3, Val: &r3},
+        {Key: 1, Val: CreateValueToken('1')},
+        {Key: 2, Val: CreateValueToken('a')},
+        {Key: 3, Val: CreateValueToken('c')},
     }
 
     // Crear el árbol
@@ -32,9 +31,9 @@ func TestBST(t *testing.T) {
 
     // Verificar cada nodo
     for i, node := range got {
-        if node.Key != expectedKeys[i] || *node.Val != expectedVals[i] {
+        if node.Key != expectedKeys[i] || *node.Val.value != expectedVals[i] {
             t.Errorf("Nodo incorrecto en posición %d: esperado (%d, %c) pero obtuvo (%d, %c)", 
-                i, expectedKeys[i], expectedVals[i], node.Key, *node.Val)
+                i, expectedKeys[i], expectedVals[i], node.Key, *node.Val.value)
         }
     }
 }

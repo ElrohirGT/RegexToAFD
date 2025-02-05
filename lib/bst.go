@@ -2,7 +2,7 @@ package lib
 
 type BSTNode struct {
     Key int 
-    Val *rune
+    Val RX_Token
     left *BSTNode
     right *BSTNode
 }
@@ -47,7 +47,7 @@ func (b *BST) List() []*BSTNode {
 
 func (b *BST) insertion(postfix []RX_Token){
     for i, v := range postfix {
-        node := &BSTNode{Key: i, Val: v.value}
+        node := &BSTNode{Key: i, Val: v}
         b.Insert(node)
     }
 }
