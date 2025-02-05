@@ -77,7 +77,9 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 	stack := l.Stack[rune]{}
 	output := []l.RX_Token{}
 
-	previousCanBeANDedTo := true
+	previousCanBeANDedTo := false
+	isInBrackets := false
+
 	for i, char := range infixExpression {
 		switch char {
 		case '|':
@@ -100,6 +102,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 
 		case '(':
 			stack.Push('(')
+			previousCanBeANDedTo = false
 
 		case ')':
 			log.Default().Printf("Popping until it finds: '('")
@@ -113,11 +116,35 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 			// Popping '('
 			stack.Pop()
 
-		default:
-			if previousCanBeANDedTo && i != 0 {
-				log.Default().Printf("Trying to append '.' operator...")
-				tryToAppendWithPrecedence(&stack, '.', &output)
+		case '[':
+			stack.Push('[')
+			isInBrackets = true
+
+		case ']':
+			log.Default().Printf("Popping until it finds: '['")
+			for peeked := stack.Peek(); peeked.GetValue() != '['; peeked = stack.Peek() {
+				val := stack.Pop()
+				op := toOperator(val.GetValue()).GetValue()
+
+				output = append(output, l.CreateOperatorToken(op))
 			}
+
+			// Popping '['
+			stack.Pop()
+			isInBrackets = false
+
+		default:
+			log.Default().Printf("%d (%c) != 0 && %t", i, char, previousCanBeANDedTo)
+			if i != 0 && previousCanBeANDedTo {
+				if !isInBrackets {
+					log.Default().Printf("Trying to append '.' operator...")
+					tryToAppendWithPrecedence(&stack, '.', &output)
+				} else {
+					log.Default().Printf("Trying to append '|' operator...")
+					tryToAppendWithPrecedence(&stack, '|', &output)
+				}
+			}
+
 			log.Default().Printf("Adding %c to output...", char)
 			output = append(output, l.CreateValueToken(char))
 			previousCanBeANDedTo = true

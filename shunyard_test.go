@@ -97,7 +97,7 @@ func TestOptional(t *testing.T) {
 }
 
 func TestZeroOrMore(t *testing.T) {
-	regexp := "abc?"
+	regexp := "abc*"
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
@@ -110,7 +110,7 @@ func TestZeroOrMore(t *testing.T) {
 		},
 	})
 
-	regexp = "ab?c"
+	regexp = "ab*c"
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
@@ -150,6 +150,20 @@ func TestParenthesis(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.OR),
 			lib.CreateValueToken('o'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+	})
+}
+
+func TestOrBrackets(t *testing.T) {
+	regexp := "[a+h]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('+'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('h'),
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
