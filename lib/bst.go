@@ -19,10 +19,14 @@ func (b *BSTNode) insert(n *BSTNode) *BSTNode {
     if b == nil {
         return n
     }
-    if n.Key < b.Key {
+    if n.Val.value == nil {
         b.left = b.left.insert(n)
-    } else if n.Key > b.Key {
-        b.right = b.right.insert(n)
+    } else {
+        if b.right == nil {
+            b.right = b.right.insert(n)
+        } else {
+            b.left = b.left.insert(n)
+        }
     }
     return b
 }
