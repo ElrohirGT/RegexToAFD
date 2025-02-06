@@ -22,7 +22,7 @@ func (b *BSTNode) insert(n *BSTNode) *BSTNode {
     if n.Val.value == nil {
         b.left = b.left.insert(n)
     } else {
-        if b.right == nil {
+        if b.right == nil && (*b.Val.operator != ZERO_OR_MANY && *b.Val.operator != ONE_OR_MANY) {
             b.right = b.right.insert(n)
         } else {
             b.left = b.left.insert(n)
