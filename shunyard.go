@@ -10,14 +10,14 @@ import (
 
 // Maps an operator in the form of a rune into a precedence number.
 // Smaller means it has more priority
-var precedence = map[rune]int{
+var precedence = map[byte]int{
 	'|': 2, // OR Operator
 	'.': 2, // AND Operator
 	'*': 1, // ZERO_OR_MORE
 	'?': 1, // ONE_OR_MORE
 }
 
-func toOperator(self rune) l.Optional[l.Operator] {
+func toOperator(self byte) l.Optional[l.Operator] {
 	log.Default().Printf("Trying to get operator from: %c", self)
 
 	switch self {
@@ -42,7 +42,7 @@ func isLetter(b byte) bool {
 	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
 }
 
-func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.RX_Token) {
+func tryToAppendWithPrecedence(stack *l.Stack[byte], operator byte, output *[]l.RX_Token) {
 	if stack.Empty() {
 		log.Default().Printf("Adding %c to stack!", operator)
 		stack.Push(operator)
@@ -89,13 +89,15 @@ const (
 )
 
 func ToPostfix(infixExpression string) []l.RX_Token {
-	stack := l.Stack[rune]{}
+	stack := l.Stack[byte]{}
 	output := []l.RX_Token{}
 
 	previousCanBeANDedTo := false
 	state := NORMAL
 
-	for i, char := range infixExpression {
+	for i := 0; i < len(infixExpression); i++ {
+		char := infixExpression[i]
+
 		switch char {
 		case '|':
 			if stack.Empty() {
@@ -162,28 +164,42 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 
 			rangeStart := byte(char)
 			if state == IN_BRACKETS {
+				log.Default().Printf("Checking if the char (%c) is a range start...", char)
 				if isLetter(rangeStart) || isDigit(rangeStart) {
 					nextChar := infixExpression[i+1]
+
 					if nextChar == '-' {
 						rangeEnd := infixExpression[i+2]
-
 						isEndTheSameAsStart := (isLetter(rangeStart) && isLetter(rangeEnd)) || (isDigit(rangeStart) && isDigit(rangeStart))
+
+						log.Default().Printf("The end char (%c) is the same type as start? %v", rangeEnd, isEndTheSameAsStart)
 						if isEndTheSameAsStart {
 							if rangeEnd < rangeStart {
 								rangeEnd, rangeStart = rangeStart, rangeEnd
 							}
 
-							for i := rangeStart; i < rangeEnd; i++ {
-								output = append(output, l.CreateValueToken(rune(i)))
+							for i := byte(0); i <= (rangeEnd - rangeStart); i++ {
+								val := rune(rangeStart + i)
+								log.Default().Printf("Adding %c to output...", val)
+								output = append(output, l.CreateValueToken(val))
+
+								if i%2 == 1 {
+									tryToAppendWithPrecedence(&stack, '|', &output)
+								}
 							}
+
+							// We already parsed '-' and the other byte
+							// So we need to ignore them
+							i += 2
+							continue
 						}
 					}
 				}
-			} else {
-				log.Default().Printf("Adding %c to output...", char)
-				output = append(output, l.CreateValueToken(char))
-				previousCanBeANDedTo = true
 			}
+
+			log.Default().Printf("Adding %c to output...", char)
+			output = append(output, l.CreateValueToken(rune(char)))
+			previousCanBeANDedTo = true
 		}
 	}
 

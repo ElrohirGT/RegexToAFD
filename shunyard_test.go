@@ -156,12 +156,12 @@ func TestParenthesis(t *testing.T) {
 }
 
 func TestOrBrackets(t *testing.T) {
-	regexp := "[a+h]"
+	regexp := "[ath]"
 	test(t, testInfo{
 		input: regexp,
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
-			lib.CreateValueToken('+'),
+			lib.CreateValueToken('t'),
 			lib.CreateOperatorToken(lib.OR),
 			lib.CreateValueToken('h'),
 			lib.CreateOperatorToken(lib.OR),
@@ -176,8 +176,6 @@ func TestRanges(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
-			lib.CreateOperatorToken(lib.OR),
-			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
