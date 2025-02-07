@@ -34,6 +34,14 @@ func toOperator(self rune) l.Optional[l.Operator] {
 	}
 }
 
+func isDigit(b byte) bool {
+	return b >= '0' && b <= '9'
+}
+
+func isLetter(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
+}
+
 func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.RX_Token) {
 	if stack.Empty() {
 		log.Default().Printf("Adding %c to stack!", operator)
@@ -73,12 +81,19 @@ func tryToAppendWithPrecedence(stack *l.Stack[rune], operator rune, output *[]l.
 	}
 }
 
+type RegexState int
+
+const (
+	NORMAL RegexState = iota
+	IN_BRACKETS
+)
+
 func ToPostfix(infixExpression string) []l.RX_Token {
 	stack := l.Stack[rune]{}
 	output := []l.RX_Token{}
 
 	previousCanBeANDedTo := false
-	isInBrackets := false
+	state := NORMAL
 
 	for i, char := range infixExpression {
 		switch char {
@@ -118,7 +133,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 
 		case '[':
 			stack.Push('[')
-			isInBrackets = true
+			state = IN_BRACKETS
 
 		case ']':
 			log.Default().Printf("Popping until it finds: '['")
@@ -131,12 +146,12 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 
 			// Popping '['
 			stack.Pop()
-			isInBrackets = false
+			state = NORMAL
 
 		default:
 			log.Default().Printf("%d (%c) != 0 && %t", i, char, previousCanBeANDedTo)
 			if i != 0 && previousCanBeANDedTo {
-				if !isInBrackets {
+				if state == NORMAL {
 					log.Default().Printf("Trying to append '.' operator...")
 					tryToAppendWithPrecedence(&stack, '.', &output)
 				} else {
@@ -145,9 +160,30 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				}
 			}
 
-			log.Default().Printf("Adding %c to output...", char)
-			output = append(output, l.CreateValueToken(char))
-			previousCanBeANDedTo = true
+			rangeStart := byte(char)
+			if state == IN_BRACKETS {
+				if isLetter(rangeStart) || isDigit(rangeStart) {
+					nextChar := infixExpression[i+1]
+					if nextChar == '-' {
+						rangeEnd := infixExpression[i+2]
+
+						isEndTheSameAsStart := (isLetter(rangeStart) && isLetter(rangeEnd)) || (isDigit(rangeStart) && isDigit(rangeStart))
+						if isEndTheSameAsStart {
+							if rangeEnd < rangeStart {
+								rangeEnd, rangeStart = rangeStart, rangeEnd
+							}
+
+							for i := rangeStart; i < rangeEnd; i++ {
+								output = append(output, l.CreateValueToken(rune(i)))
+							}
+						}
+					}
+				}
+			} else {
+				log.Default().Printf("Adding %c to output...", char)
+				output = append(output, l.CreateValueToken(char))
+				previousCanBeANDedTo = true
+			}
 		}
 	}
 

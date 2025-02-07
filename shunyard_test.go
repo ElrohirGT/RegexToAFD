@@ -169,8 +169,34 @@ func TestOrBrackets(t *testing.T) {
 	})
 }
 
-// func TestRanges(t *testing.T) {
-// 	regexp := "[a-c]"
+func TestRanges(t *testing.T) {
+	regexp := "[a-b]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+	})
+}
+
+func TestEscapeSequences(t *testing.T) {
+	regexp := "\\a\\[\\*"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('['),
+			lib.CreateValueToken('*'),
+		},
+	})
+}
+
+// func TestNotRanges(t *testing.T) {
+// 	regexp := "[^a-c]"
 // 	test(t, testInfo{
 // 		input: regexp,
 // 		expected: []lib.RX_Token{
