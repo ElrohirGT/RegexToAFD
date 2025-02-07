@@ -93,15 +93,16 @@ const (
 	IN_BRACKETS
 )
 
-func ToPostfix(infixExpression string) []l.RX_Token {
-	stack := l.Stack[byte]{}
-	output := []l.RX_Token{}
+type stack = l.Stack[byte]
+type output = []l.RX_Token
 
+func toPostFix(infixExpression *string, stack *stack, output *output) {
+	infixExpr := *infixExpression
 	previousCanBeANDedTo := false
 	state := NORMAL
 
-	for i := 0; i < len(infixExpression); i++ {
-		char := infixExpression[i]
+	for i := 0; i < len(infixExpr); i++ {
+		char := infixExpr[i]
 
 		switch char {
 		case '|':
@@ -109,7 +110,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				log.Default().Printf("Adding %c to stack!", char)
 				stack.Push(char)
 			} else {
-				tryToAppendWithPrecedence(&stack, char, &output)
+				tryToAppendWithPrecedence(stack, char, output)
 			}
 			previousCanBeANDedTo = false
 
@@ -118,7 +119,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				log.Default().Printf("Adding %c to stack!", char)
 				stack.Push(char)
 			} else {
-				tryToAppendWithPrecedence(&stack, char, &output)
+				tryToAppendWithPrecedence(stack, char, output)
 			}
 			previousCanBeANDedTo = true
 
@@ -132,7 +133,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				val := stack.Pop()
 				op := toOperator(val.GetValue()).GetValue()
 
-				output = append(output, l.CreateOperatorToken(op))
+				*output = append(*output, l.CreateOperatorToken(op))
 			}
 
 			// Popping '('
@@ -148,7 +149,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 				val := stack.Pop()
 				op := toOperator(val.GetValue()).GetValue()
 
-				output = append(output, l.CreateOperatorToken(op))
+				*output = append(*output, l.CreateOperatorToken(op))
 			}
 
 			// Popping '['
@@ -160,10 +161,10 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 			if i != 0 && previousCanBeANDedTo {
 				if state == NORMAL {
 					log.Default().Printf("Trying to append '.' operator...")
-					tryToAppendWithPrecedence(&stack, '.', &output)
+					tryToAppendWithPrecedence(stack, '.', output)
 				} else {
 					log.Default().Printf("Trying to append '|' operator...")
-					tryToAppendWithPrecedence(&stack, '|', &output)
+					tryToAppendWithPrecedence(stack, '|', output)
 				}
 			}
 
@@ -171,10 +172,10 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 			if state == IN_BRACKETS {
 				log.Default().Printf("Checking if the char (%c) is a range start...", char)
 				if isLetter(rangeStart) || isDigit(rangeStart) {
-					nextChar := infixExpression[i+1]
+					nextChar := infixExpr[i+1]
 
 					if nextChar == '-' {
-						rangeEnd := infixExpression[i+2]
+						rangeEnd := infixExpr[i+2]
 						isEndTheSameAsStart := (isLetter(rangeStart) && isLetter(rangeEnd)) || (isDigit(rangeStart) && isDigit(rangeStart))
 
 						log.Default().Printf("The end char (%c) is the same type as start? %v", rangeEnd, isEndTheSameAsStart)
@@ -186,10 +187,10 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 							for j := byte(0); j <= (rangeEnd - rangeStart); j++ {
 								val := rune(rangeStart + j)
 								log.Default().Printf("Adding %c to output...", val)
-								output = append(output, l.CreateValueToken(val))
+								*output = append(*output, l.CreateValueToken(val))
 
 								if j >= 1 {
-									tryToAppendWithPrecedence(&stack, '|', &output)
+									tryToAppendWithPrecedence(stack, '|', output)
 								}
 							}
 
@@ -203,7 +204,7 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 			}
 
 			log.Default().Printf("Adding %c to output...", char)
-			output = append(output, l.CreateValueToken(rune(char)))
+			*output = append(*output, l.CreateValueToken(rune(char)))
 			previousCanBeANDedTo = true
 		}
 	}
@@ -213,13 +214,20 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 		op := toOperator(val)
 
 		if val == '?' {
-			output = append(output, l.CreateEpsilonValue())
-			output = append(output, l.CreateOperatorToken(l.OR))
+			*output = append(*output, l.CreateEpsilonValue())
+			*output = append(*output, l.CreateOperatorToken(l.OR))
 		} else if op.HasValue() {
 			log.Default().Printf("Adding %c to output...", val)
-			output = append(output, l.CreateOperatorToken(op.GetValue()))
+			*output = append(*output, l.CreateOperatorToken(op.GetValue()))
 		}
 	}
+}
+
+func ToPostfix(infixExpression string) []l.RX_Token {
+	stack := l.Stack[byte]{}
+	output := []l.RX_Token{}
+
+	toPostFix(&infixExpression, &stack, &output)
 
 	return output
 }
