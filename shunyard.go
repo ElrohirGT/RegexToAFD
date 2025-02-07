@@ -178,12 +178,12 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 								rangeEnd, rangeStart = rangeStart, rangeEnd
 							}
 
-							for i := byte(0); i <= (rangeEnd - rangeStart); i++ {
-								val := rune(rangeStart + i)
+							for j := byte(0); j <= (rangeEnd - rangeStart); j++ {
+								val := rune(rangeStart + j)
 								log.Default().Printf("Adding %c to output...", val)
 								output = append(output, l.CreateValueToken(val))
 
-								if i%2 == 1 {
+								if j >= 1 {
 									tryToAppendWithPrecedence(&stack, '|', &output)
 								}
 							}

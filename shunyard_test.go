@@ -179,6 +179,30 @@ func TestRanges(t *testing.T) {
 			lib.CreateOperatorToken(lib.OR),
 		},
 	})
+
+	regexp = "[a-a]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+		},
+	})
+}
+
+func TestLargeRange(t *testing.T) {
+	regexp := "[a-d]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+	})
 }
 
 func TestEscapeSequences(t *testing.T) {
