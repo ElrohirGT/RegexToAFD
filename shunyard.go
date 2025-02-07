@@ -174,6 +174,12 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			tryToAppendWithPrecedence(stack, '*', output)
 			tryToAppendWithPrecedence(stack, '.', output)
 
+		case '\\':
+			nextChar := infixExpr[i+1]
+			log.Default().Printf("Escape sequence found! Adding %c as a char...", nextChar)
+			*output = append(*output, l.CreateValueToken(rune(nextChar)))
+			i += 1
+
 		default:
 			log.Default().Printf("Iteration: (%c) %d != 0 && previousCanBeANDed: %t", char, i, previousCanBeANDedTo)
 			if i != 0 && previousCanBeANDedTo {
