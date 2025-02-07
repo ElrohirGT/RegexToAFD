@@ -5,8 +5,6 @@ type Operator int
 const (
 	OR           Operator = iota // This OR that operator.
 	AND                          // Concatenation operator.
-	RANGE                        // When we write {1,5}
-	ONE_OR_MANY                  // ? Operator
 	ZERO_OR_MANY                 // * Operator
 )
 
@@ -15,7 +13,10 @@ const (
 // If value is null then it should have an operator value, otherwise a value should be provided!
 type RX_Token struct {
 	operator *Operator
-	value    *rune
+	// If the value is null then this token is an operator.
+	// If the optional doesn't have a value then the value is epsilon.
+	// If the optional has a value then this token has the value of the rune.
+	value *Optional[rune]
 }
 
 func CreateOperatorToken(t Operator) RX_Token {
@@ -25,8 +26,16 @@ func CreateOperatorToken(t Operator) RX_Token {
 }
 
 func CreateValueToken(value rune) RX_Token {
+	val := CreateValue(value)
 	return RX_Token{
-		value: &value,
+		value: &val,
+	}
+}
+
+func CreateEpsilonValue() RX_Token {
+	val := CreateNull[rune]()
+	return RX_Token{
+		value: &val,
 	}
 }
 

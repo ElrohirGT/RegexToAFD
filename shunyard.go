@@ -14,7 +14,7 @@ var precedence = map[byte]int{
 	'|': 2, // OR Operator
 	'.': 2, // AND Operator
 	'*': 1, // ZERO_OR_MORE
-	'?': 1, // ONE_OR_MORE
+	'?': 1, // ZERO_OR_ONE
 }
 
 func toOperator(self byte) l.Optional[l.Operator] {
@@ -25,8 +25,6 @@ func toOperator(self byte) l.Optional[l.Operator] {
 		return l.CreateValue(l.OR)
 	case '.':
 		return l.CreateValue(l.AND)
-	case '?':
-		return l.CreateValue(l.ONE_OR_MANY)
 	case '*':
 		return l.CreateValue(l.ZERO_OR_MANY)
 	default:
@@ -59,11 +57,18 @@ func tryToAppendWithPrecedence(stack *l.Stack[byte], operator byte, output *[]l.
 		stack.Push(operator)
 	} else {
 		for stackPrecedence < currentPrecedence {
-			poppedRune := stack.Pop()
+			poppedRune := stack.Pop().GetValue()
 
-			op := toOperator(poppedRune.GetValue())
-			log.Default().Printf("Adding %c to output...", poppedRune.GetValue())
-			*output = append(*output, l.CreateOperatorToken(op.GetValue()))
+			if poppedRune == '?' {
+				*output = append(*output, l.CreateEpsilonValue())
+				*output = append(*output, l.CreateOperatorToken(l.OR))
+				// } else if poppedRune == '+' {
+				// 	*output = append(*output, l.CreateEpsilonValue())
+			} else {
+				op := toOperator(poppedRune)
+				log.Default().Printf("Adding %c to output...", poppedRune)
+				*output = append(*output, l.CreateOperatorToken(op.GetValue()))
+			}
 
 			if stack.Empty() {
 				break

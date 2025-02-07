@@ -76,7 +76,8 @@ func TestOptional(t *testing.T) {
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
 			lib.CreateValueToken('c'),
-			lib.CreateOperatorToken(lib.ONE_OR_MANY),
+			lib.CreateEpsilonValue(),
+			lib.CreateOperatorToken(lib.OR),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
@@ -88,7 +89,8 @@ func TestOptional(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
-			lib.CreateOperatorToken(lib.ONE_OR_MANY),
+			lib.CreateEpsilonValue(),
+			lib.CreateOperatorToken(lib.OR),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
@@ -213,6 +215,40 @@ func TestEscapeSequences(t *testing.T) {
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('['),
 			lib.CreateValueToken('*'),
+		},
+	})
+}
+
+func TestOneOrMore(t *testing.T) {
+	regexp := "a+bh"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('a'),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('h'),
+			lib.CreateOperatorToken(lib.AND),
+		},
+	})
+}
+
+func TestOneOrMoreComplicated(t *testing.T) {
+	regexp := "(bh)+"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('h'),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('h'),
+			lib.CreateOperatorToken(lib.AND),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
 		},
 	})
 }
