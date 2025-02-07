@@ -3,10 +3,8 @@ package main
 // You can rename package names when importing them!
 // Here the "l" alias is being used!
 import (
-	"log"
-	"strings"
-
 	l "github.com/ElrohirGT/RegexToAFD/lib"
+	"log"
 )
 
 // Maps an operator in the form of a rune into a precedence number.
@@ -95,15 +93,15 @@ const (
 	IN_PARENTHESIS
 )
 
-type stack = l.Stack[byte]
-type output = []l.RX_Token
+type ShunStack = l.Stack[byte]
+type ShunOutput = []l.RX_Token
 
-func toPostFix(infixExpression *string, stack *stack, output *output) {
+func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 	infixExpr := *infixExpression
 	previousCanBeANDedTo := false
 	state := NORMAL
 
-	previousExpr := ""
+	previousExprStack := l.ExprStack{}
 	for i := 0; i < len(infixExpr); i++ {
 		char := infixExpr[i]
 
@@ -130,8 +128,16 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			stack.Push('(')
 			previousCanBeANDedTo = false
 			state = IN_PARENTHESIS
-			log.Default().Printf("The previous expression before deleting is: %s", previousExpr)
-			previousExpr = "("
+
+			expr := ""
+			if !previousExprStack.IsEmpty() {
+				expr = previousExprStack.Peek().GetValue()
+			}
+
+			log.Default().Printf("The previous expression before deleting is: %s", expr)
+			previousExprStack.Pop()     // Deletes previous expression
+			previousExprStack.Push("(") // Adds ( context
+			previousExprStack.Push("")  // Adds inner ( ) context
 
 		case ')':
 			log.Default().Printf("Popping until it finds: '('")
@@ -145,14 +151,22 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			// Popping '('
 			stack.Pop()
 			state = NORMAL
-			previousExpr = strings.Join([]string{previousExpr, ")"}, "")
+			previousExprStack.AppendTop(")")
+			previousExprStack.Pop() // Popping inner ( ) context
 
 		case '[':
 			stack.Push('[')
 			previousCanBeANDedTo = false
 			state = IN_BRACKETS
-			log.Default().Printf("The previous expression before deleting is: %s", previousExpr)
-			previousExpr = "["
+
+			expr := ""
+			if !previousExprStack.IsEmpty() {
+				expr = previousExprStack.Peek().GetValue()
+			}
+			log.Default().Printf("The previous expression before deleting is: %s", expr)
+			previousExprStack.Pop()     // Deletes previous expression
+			previousExprStack.Push("[") // Adds [ context
+			previousExprStack.Push("")  // Adds inner [ ] context
 
 		case ']':
 			log.Default().Printf("Popping until it finds: '['")
@@ -166,13 +180,16 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			// Popping '['
 			stack.Pop()
 			state = NORMAL
-			previousExpr = strings.Join([]string{previousExpr, "]"}, "")
+			previousExprStack.AppendTop("]")
+			previousExprStack.Pop() // Popping inner [ ] context
 
 		case '+':
+			previousExpr := previousExprStack.Pop().GetValue()
 			log.Default().Printf("'+' found! Recursing with: %s ...", previousExpr)
 			toPostFix(&previousExpr, stack, output)
 			tryToAppendWithPrecedence(stack, '*', output)
 			tryToAppendWithPrecedence(stack, '.', output)
+			previousExprStack.Push("")
 
 		case '\\':
 			nextChar := infixExpr[i+1]
@@ -228,11 +245,22 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			}
 
 			if state == IN_BRACKETS || state == IN_PARENTHESIS {
-				log.Default().Printf("Appending %s to expression: %s", string(char), previousExpr)
-				previousExpr = strings.Join([]string{previousExpr, string(char)}, "")
+				expr := ""
+				if !previousExprStack.IsEmpty() {
+					expr = previousExprStack.Peek().GetValue()
+				}
+				log.Default().Printf("Appending %s to expression: %s", string(char), expr)
+				previousExprStack.AppendTop(string(char))
 			} else {
-				log.Default().Printf("Changing previous expr from %s to %s", previousExpr, string(char))
-				previousExpr = string(char)
+
+				expr := ""
+				if !previousExprStack.IsEmpty() {
+					expr = previousExprStack.Peek().GetValue()
+				}
+
+				log.Default().Printf("Changing previous expr from %s to %s", expr, string(char))
+				previousExprStack.Pop()
+				previousExprStack.Push(string(char))
 			}
 
 			log.Default().Printf("Adding %c to output...", char)
