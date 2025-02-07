@@ -4,6 +4,7 @@ package main
 // Here the "l" alias is being used!
 import (
 	"log"
+	"strings"
 
 	l "github.com/ElrohirGT/RegexToAFD/lib"
 )
@@ -91,6 +92,7 @@ type RegexState int
 const (
 	NORMAL RegexState = iota
 	IN_BRACKETS
+	IN_PARENTHESIS
 )
 
 type stack = l.Stack[byte]
@@ -101,6 +103,7 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 	previousCanBeANDedTo := false
 	state := NORMAL
 
+	previousExpr := ""
 	for i := 0; i < len(infixExpr); i++ {
 		char := infixExpr[i]
 
@@ -126,6 +129,9 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 		case '(':
 			stack.Push('(')
 			previousCanBeANDedTo = false
+			state = IN_PARENTHESIS
+			log.Default().Printf("The previous expression before deleting is: %s", previousExpr)
+			previousExpr = "("
 
 		case ')':
 			log.Default().Printf("Popping until it finds: '('")
@@ -138,10 +144,15 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 
 			// Popping '('
 			stack.Pop()
+			state = NORMAL
+			previousExpr = strings.Join([]string{previousExpr, ")"}, "")
 
 		case '[':
 			stack.Push('[')
+			previousCanBeANDedTo = false
 			state = IN_BRACKETS
+			log.Default().Printf("The previous expression before deleting is: %s", previousExpr)
+			previousExpr = "["
 
 		case ']':
 			log.Default().Printf("Popping until it finds: '['")
@@ -155,9 +166,16 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			// Popping '['
 			stack.Pop()
 			state = NORMAL
+			previousExpr = strings.Join([]string{previousExpr, "]"}, "")
+
+		case '+':
+			log.Default().Printf("'+' found! Recursing...")
+			toPostFix(&previousExpr, stack, output)
+			tryToAppendWithPrecedence(stack, '*', output)
+			tryToAppendWithPrecedence(stack, '.', output)
 
 		default:
-			log.Default().Printf("%d (%c) != 0 && %t", i, char, previousCanBeANDedTo)
+			log.Default().Printf("Iteration: (%c) %d != 0 && previousCanBeANDed: %t", char, i, previousCanBeANDedTo)
 			if i != 0 && previousCanBeANDedTo {
 				if state == NORMAL {
 					log.Default().Printf("Trying to append '.' operator...")
@@ -201,6 +219,13 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 						}
 					}
 				}
+			}
+
+			if state == IN_BRACKETS || state == IN_PARENTHESIS {
+				previousExpr = strings.Join([]string{previousExpr, string(char)}, "")
+			} else {
+				log.Default().Printf("Changing previous expr from %s to %s", previousExpr, string(char))
+				previousExpr = string(char)
 			}
 
 			log.Default().Printf("Adding %c to output...", char)
