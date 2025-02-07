@@ -209,11 +209,14 @@ func ToPostfix(infixExpression string) []l.RX_Token {
 	}
 
 	for !stack.Empty() {
-		val := stack.Pop()
-		op := toOperator(val.GetValue())
+		val := stack.Pop().GetValue()
+		op := toOperator(val)
 
-		if op.HasValue() {
-			log.Default().Printf("Adding %c to output...", val.GetValue())
+		if val == '?' {
+			output = append(output, l.CreateEpsilonValue())
+			output = append(output, l.CreateOperatorToken(l.OR))
+		} else if op.HasValue() {
+			log.Default().Printf("Adding %c to output...", val)
 			output = append(output, l.CreateOperatorToken(op.GetValue()))
 		}
 	}
