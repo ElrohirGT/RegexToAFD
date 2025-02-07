@@ -1,11 +1,52 @@
 package main
 
-import "testing"
-import "github.com/ElrohirGT/RegexToAFD/lib"
+import (
+	"fmt"
+	"strings"
+	"testing"
+
+	"github.com/ElrohirGT/RegexToAFD/lib"
+)
 
 type testInfo struct {
 	input    string
 	expected []lib.RX_Token
+}
+
+func toString(stream *[]lib.RX_Token) string {
+	sb := strings.Builder{}
+	sb.WriteString("{ ")
+	for _, token := range *stream {
+		if token.IsOperator() {
+			op := *token.GetOperator()
+			displayOp := "invalid"
+
+			switch op {
+			case lib.OR:
+				displayOp = "OR"
+			case lib.AND:
+				displayOp = "AND"
+			case lib.ZERO_OR_MANY:
+				displayOp = "*"
+			}
+
+			sb.WriteString(
+				fmt.Sprintf("[op: %s] ", displayOp),
+			)
+		} else {
+			val := "epsilon"
+			if token.GetValue().HasValue() {
+				val = string(token.GetValue().GetValue())
+			}
+
+			sb.WriteString(
+				fmt.Sprintf("[val: %s]", val),
+			)
+		}
+	}
+	sb.WriteString(" }")
+
+	return sb.String()
 }
 
 func test(t *testing.T, info testInfo) {
@@ -15,7 +56,7 @@ func test(t *testing.T, info testInfo) {
 	expectedLength := len(info.expected)
 	if expectedLength != resultLength {
 		t.Errorf("The lengths don't match! %d != %d\nResult: %+v\nExpected: %+v\nFailed on: %s",
-			expectedLength, resultLength, result, info.expected, info.input)
+			expectedLength, resultLength, toString(&result), toString(&info.expected), info.input)
 	}
 
 	for i, expected := range info.expected {

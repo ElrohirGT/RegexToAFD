@@ -61,8 +61,6 @@ func tryToAppendWithPrecedence(stack *l.Stack[byte], operator byte, output *[]l.
 			if poppedRune == '?' {
 				*output = append(*output, l.CreateEpsilonValue())
 				*output = append(*output, l.CreateOperatorToken(l.OR))
-				// } else if poppedRune == '+' {
-				// 	*output = append(*output, l.CreateEpsilonValue())
 			} else {
 				op := toOperator(poppedRune)
 				log.Default().Printf("Adding %c to output...", poppedRune)
@@ -103,24 +101,25 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 
 	previousExprStack := l.ExprStack{}
 	for i := 0; i < len(infixExpr); i++ {
-		char := infixExpr[i]
+		currentChar := infixExpr[i]
+		log.Default().Printf("Currently checking: `%c`", currentChar)
 
-		switch char {
+		switch currentChar {
 		case '|':
 			if stack.Empty() {
-				log.Default().Printf("Adding %c to stack!", char)
-				stack.Push(char)
+				log.Default().Printf("Adding `%c` to stack!", currentChar)
+				stack.Push(currentChar)
 			} else {
-				tryToAppendWithPrecedence(stack, char, output)
+				tryToAppendWithPrecedence(stack, currentChar, output)
 			}
 			previousCanBeANDedTo = false
 
 		case '?', '*':
 			if stack.Empty() {
-				log.Default().Printf("Adding %c to stack!", char)
-				stack.Push(char)
+				log.Default().Printf("Adding `%c` to stack!", currentChar)
+				stack.Push(currentChar)
 			} else {
-				tryToAppendWithPrecedence(stack, char, output)
+				tryToAppendWithPrecedence(stack, currentChar, output)
 			}
 			previousCanBeANDedTo = true
 
@@ -184,12 +183,17 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 			previousExprStack.Pop() // Popping inner [ ] context
 
 		case '+':
+			log.Default().Printf("'+' found! Adding OR operator")
 			previousExpr := previousExprStack.Pop().GetValue()
-			log.Default().Printf("'+' found! Recursing with: %s ...", previousExpr)
-			toPostFix(&previousExpr, stack, output)
-			tryToAppendWithPrecedence(stack, '*', output)
-			tryToAppendWithPrecedence(stack, '.', output)
+
+			log.Default().Printf("Recursing with: `%s`...", previousExpr)
+			toPostFix(&previousExpr, &ShunStack{}, output)
+			*output = append(*output, l.CreateOperatorToken(l.ZERO_OR_MANY))
+			*output = append(*output, l.CreateOperatorToken(l.OR))
+
+			previousExprStack.AppendTop("+")
 			previousExprStack.Push("")
+			previousCanBeANDedTo = true
 
 		case '\\':
 			nextChar := infixExpr[i+1]
@@ -198,9 +202,9 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 			i += 1
 
 		default:
-			log.Default().Printf("Iteration: (%c) %d != 0 && previousCanBeANDed: %t", char, i, previousCanBeANDedTo)
+			log.Default().Printf("Iteration: (%c) %d != 0 && previousCanBeANDed: %t", currentChar, i, previousCanBeANDedTo)
 			if i != 0 && previousCanBeANDedTo {
-				if state == NORMAL {
+				if state == NORMAL || state == IN_PARENTHESIS {
 					log.Default().Printf("Trying to append '.' operator...")
 					tryToAppendWithPrecedence(stack, '.', output)
 				} else {
@@ -209,9 +213,9 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 				}
 			}
 
-			rangeStart := byte(char)
+			rangeStart := byte(currentChar)
 			if state == IN_BRACKETS {
-				log.Default().Printf("Checking if the char (%c) is a range start...", char)
+				log.Default().Printf("Checking if the char (%c) is a range start...", currentChar)
 				if isLetter(rangeStart) || isDigit(rangeStart) {
 					nextChar := infixExpr[i+1]
 
@@ -249,8 +253,8 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 				if !previousExprStack.IsEmpty() {
 					expr = previousExprStack.Peek().GetValue()
 				}
-				log.Default().Printf("Appending %s to expression: %s", string(char), expr)
-				previousExprStack.AppendTop(string(char))
+				log.Default().Printf("Appending %s to expression: %s", string(currentChar), expr)
+				previousExprStack.AppendTop(string(currentChar))
 			} else {
 
 				expr := ""
@@ -258,19 +262,24 @@ func toPostFix(infixExpression *string, stack *ShunStack, output *ShunOutput) {
 					expr = previousExprStack.Peek().GetValue()
 				}
 
-				log.Default().Printf("Changing previous expr from %s to %s", expr, string(char))
+				log.Default().Printf("Changing previous expr from `%s` to `%s`", expr, string(currentChar))
 				previousExprStack.Pop()
-				previousExprStack.Push(string(char))
+				previousExprStack.Push(string(currentChar))
 			}
 
-			log.Default().Printf("Adding %c to output...", char)
-			*output = append(*output, l.CreateValueToken(rune(char)))
+			log.Default().Printf("Adding %c to output...", currentChar)
+			*output = append(*output, l.CreateValueToken(rune(currentChar)))
 			previousCanBeANDedTo = true
 		}
 	}
 
 	for !stack.Empty() {
-		val := stack.Pop().GetValue()
+		val := stack.Peek().GetValue()
+		if val == '(' {
+			break
+		} else {
+			stack.Pop()
+		}
 		op := toOperator(val)
 
 		if val == '?' {

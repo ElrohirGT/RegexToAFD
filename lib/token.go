@@ -19,6 +19,22 @@ type RX_Token struct {
 	value *Optional[rune]
 }
 
+func (self *RX_Token) GetValue() *Optional[rune] {
+	return self.value
+}
+
+func (self *RX_Token) GetOperator() *Operator {
+	return self.operator
+}
+
+func (self *RX_Token) IsValue() bool {
+	return self.value != nil
+}
+
+func (self *RX_Token) IsOperator() bool {
+	return self.operator != nil
+}
+
 func CreateOperatorToken(t Operator) RX_Token {
 	return RX_Token{
 		operator: &t,
