@@ -169,7 +169,7 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			previousExpr = strings.Join([]string{previousExpr, "]"}, "")
 
 		case '+':
-			log.Default().Printf("'+' found! Recursing...")
+			log.Default().Printf("'+' found! Recursing with: %s ...", previousExpr)
 			toPostFix(&previousExpr, stack, output)
 			tryToAppendWithPrecedence(stack, '*', output)
 			tryToAppendWithPrecedence(stack, '.', output)
@@ -228,6 +228,7 @@ func toPostFix(infixExpression *string, stack *stack, output *output) {
 			}
 
 			if state == IN_BRACKETS || state == IN_PARENTHESIS {
+				log.Default().Printf("Appending %s to expression: %s", string(char), previousExpr)
 				previousExpr = strings.Join([]string{previousExpr, string(char)}, "")
 			} else {
 				log.Default().Printf("Changing previous expr from %s to %s", previousExpr, string(char))

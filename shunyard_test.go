@@ -253,6 +253,31 @@ func TestOneOrMoreComplicated(t *testing.T) {
 	})
 }
 
+// func TestOneOrMoreRecursive(t *testing.T) {
+// 	regexp := "(b+a)+"
+//
+// 	test(t, testInfo{
+// 		input: regexp,
+// 		expected: []lib.RX_Token{
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+// 			lib.CreateOperatorToken(lib.OR),
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateOperatorToken(lib.AND),
+//
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateValueToken('b'),
+// 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+// 			lib.CreateOperatorToken(lib.OR),
+// 			lib.CreateValueToken('a'),
+// 			lib.CreateOperatorToken(lib.AND),
+// 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+// 			lib.CreateOperatorToken(lib.OR),
+// 		},
+// 	})
+// }
+
 // func TestNotRanges(t *testing.T) {
 // 	regexp := "[^a-c]"
 // 	test(t, testInfo{
