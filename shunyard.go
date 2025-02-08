@@ -180,6 +180,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 
 			if nextChar == '^' {
 				state = IN_NEGATIVE_BRACKETS
+				i++
 			} else {
 				state = IN_BRACKETS
 			}
@@ -202,24 +203,29 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				*output = append(*output, l.CreateOperatorToken(op))
 			}
 
+			// Popping '['
+			stack.Pop()
+			previousExprStack.AppendTop("]")
+			previousExprStack.Pop() // Popping inner [ ] context
+
+			log.Default().Printf("Checking if IN_NEGATIVE_BRACKETS: %d == %d", state, IN_NEGATIVE_BRACKETS)
 			if state == IN_NEGATIVE_BRACKETS {
 				diff := alph.GetCharsNotIn(negativeBuffer.String())
-				for idx := range len(diff) {
-					val := diff[idx]
+				log.Default().Printf("Obtaining diff: `%s`", diff)
+
+				for idx, val := range diff {
+
+					log.Default().Printf("Appending %c to output...", val)
 					*output = append(*output, l.CreateValueToken(rune(val)))
 
-					if idx != len(diff) {
+					if idx < len(diff)-1 {
 						tryToAppendWithPrecedence(stack, '|', output)
 					}
 				}
 			}
 			negativeBuffer = strings.Builder{}
 
-			// Popping '['
-			stack.Pop()
 			state = NORMAL
-			previousExprStack.AppendTop("]")
-			previousExprStack.Pop() // Popping inner [ ] context
 
 		case '+':
 			log.Default().Printf("'+' found! Adding OR operator")
@@ -360,9 +366,15 @@ func NewAlphabetFromString(chars string) Alphabet {
 }
 
 func (alph *Alphabet) GetCharsNotIn(chars string) string {
-	out := strings.Builder{}
+	charsMap := make(map[rune]struct{})
+
 	for _, rune := range chars {
-		_, found := (*alph)[rune]
+		charsMap[rune] = struct{}{}
+	}
+
+	out := strings.Builder{}
+	for rune := range *alph {
+		_, found := charsMap[rune]
 
 		if !found {
 			out.WriteRune(rune)

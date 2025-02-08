@@ -348,6 +348,24 @@ func TestNotRanges(t *testing.T) {
 		},
 		alphabet: NewAlphabetFromString("abcdefghijklmnñopqrstuvwxyz"),
 	})
+
+}
+
+func TestBigNotRange(t *testing.T) {
+	regexp := "[^e-z]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+		alphabet: NewAlphabetFromString("abcdefghijklmnopqrstuvwxyz"),
+	})
 }
 
 // func TestPasswordPolicy(t *testing.T) {
