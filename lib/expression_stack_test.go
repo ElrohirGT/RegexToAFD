@@ -9,11 +9,11 @@ func TestExpressionStack(t *testing.T) {
 
 	stack.AppendTop("Hola")
 
-	if val := stack.Pop(); val != "cHola" {
+	if val := stack.Pop().GetValue(); val != "cHola" {
 		t.Fatalf("Popped value is not the same! `%s` != `cHola`", val)
 	}
 
-	if val := stack.Pop(); val != "abHola" {
+	if val := stack.Pop().GetValue(); val != "abHola" {
 		t.Fatalf("Popped value is not the same! `%s` != `abHola`", val)
 	}
 

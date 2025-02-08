@@ -15,5 +15,5 @@ type AFD struct {
 	// Each key on this second dictionary represents an input from the alphabet,
 	// and the value is the new State the automata should transition.
 	Transitions      map[AFDState]map[AlphabetInput]AFDState
-	AcceptanceStates []AFDState
+	AcceptanceStates Set[AFDState]
 }
