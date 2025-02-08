@@ -11,6 +11,7 @@ import (
 type testInfo struct {
 	input    string
 	expected []lib.RX_Token
+	alphabet Alphabet
 }
 
 func toString(stream *[]lib.RX_Token) string {
@@ -50,7 +51,7 @@ func toString(stream *[]lib.RX_Token) string {
 }
 
 func test(t *testing.T, info testInfo) {
-	result := ToPostfix(info.input)
+	result := info.alphabet.ToPostfix(info.input)
 
 	resultLength := len(result)
 	expectedLength := len(info.expected)
@@ -78,6 +79,7 @@ func TestSimpleOr(t *testing.T) {
 			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -92,6 +94,7 @@ func TestSimpleAnd(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -106,6 +109,7 @@ func TestSimpleCombination(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -122,6 +126,7 @@ func TestOptional(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 
 	regexp = "ab?c"
@@ -136,6 +141,7 @@ func TestOptional(t *testing.T) {
 			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -151,6 +157,7 @@ func TestZeroOrMore(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 
 	regexp = "ab*c"
@@ -164,6 +171,7 @@ func TestZeroOrMore(t *testing.T) {
 			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -181,6 +189,7 @@ func TestParenthesis(t *testing.T) {
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 
 	regexp = "b|(ac)|o"
@@ -195,6 +204,7 @@ func TestParenthesis(t *testing.T) {
 			lib.CreateValueToken('o'),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -209,6 +219,7 @@ func TestOrBrackets(t *testing.T) {
 			lib.CreateValueToken('h'),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -221,6 +232,7 @@ func TestRanges(t *testing.T) {
 			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 
 	regexp = "[a-a]"
@@ -229,6 +241,7 @@ func TestRanges(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -245,6 +258,7 @@ func TestLargeRange(t *testing.T) {
 			lib.CreateValueToken('d'),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -257,6 +271,7 @@ func TestEscapeSequences(t *testing.T) {
 			lib.CreateValueToken('['),
 			lib.CreateValueToken('*'),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -274,6 +289,7 @@ func TestOneOrMore(t *testing.T) {
 			lib.CreateValueToken('h'),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -291,6 +307,7 @@ func TestOneOrMoreComplicated(t *testing.T) {
 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
 			lib.CreateOperatorToken(lib.AND),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
@@ -316,22 +333,22 @@ func TestOneOrMoreRecursive(t *testing.T) {
 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
 			lib.CreateOperatorToken(lib.OR),
 		},
+		alphabet: DEFAULT_ALPHABET,
 	})
 }
 
-// func TestNotRanges(t *testing.T) {
-// 	regexp := "[^a-c]"
-// 	test(t, testInfo{
-// 		input: regexp,
-// 		expected: []lib.RX_Token{
-// 			lib.CreateValueToken('a'),
-// 			lib.CreateValueToken('b'),
-// 			lib.CreateOperatorToken(lib.OR),
-// 			lib.CreateValueToken('c'),
-// 			lib.CreateOperatorToken(lib.OR),
-// 		},
-// 	})
-// }
+func TestNotRanges(t *testing.T) {
+	regexp := "[^c-z]"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+		},
+		alphabet: NewAlphabetFromString("abcdefghijklmnñopqrstuvwxyz"),
+	})
+}
 
 // func TestPasswordPolicy(t *testing.T) {
 // 	regexp := "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$"
