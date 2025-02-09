@@ -16,7 +16,7 @@ type TableRow struct {
     firtspos []int
     lastpos []int
     followpos []int
-    simbol *rune
+    simbol rune
 }
 
 func (b *BST) Insert(n *BSTNode) {
@@ -92,6 +92,9 @@ func convertTreeToTable(nodes []*BSTNode) []*TableRow {
 
             // lastpos
             newRow.lastpos = append(newRow.lastpos, i)
+
+            // simbol
+            newRow.simbol = v.Val.value.GetValue()
 
         } else if v.Val.value != nil && !v.Val.value.HasValue() {
             newRow.nullable = true
