@@ -22,6 +22,16 @@ type AFD struct {
 
 type AFDPairType int
 
+func (self *AFD) GetAllStates() []AFDState {
+	out := []AFDState{}
+
+	for state := range self.Transitions {
+		out = append(out, state)
+	}
+
+	return out
+}
+
 func (self *AFD) IsAccepted(state *AFDState) bool {
 	_, found := self.AcceptanceStates[*state]
 	return found

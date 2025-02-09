@@ -49,12 +49,17 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 		Transitions: make(map[lib.AFDState]map[lib.AlphabetInput]lib.AFDState),
 	}
 	outStates := []string{}
-	stateEvaluationRecord := lib.Set[lib.AFDState]{}
+	statesAlreadyFused := lib.Set[lib.AFDState]{}
 	pairStatesEvaluationTable := lib.AFDStateTable[bool]{}
 
 	// Now fuse all non distinguishable pairs...
 	for _, aState := range states {
+		if statesAlreadyFused.Contains(aState) {
+			continue
+		}
+
 		nameBuilder := strings.Builder{}
+		nameBuilder.WriteString("|")
 		nameBuilder.WriteString(aState)
 
 		equivalentStates := []lib.AFDState{}
@@ -87,17 +92,40 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 				pairStatesEvaluationTable.AddOrUpdate(aState, bState, true)
 			}
 
-			if bState != aState {
-				stateEvaluationRecord.Add(bState)
+			if bState != aState && !statesAlreadyFused.Contains(bState) {
+				statesAlreadyFused.Add(bState)
+				nameBuilder.WriteString("|")
 				nameBuilder.WriteString(bState)
 			}
 		}
 
-		if stateEvaluationRecord.Add(aState) {
+		if statesAlreadyFused.Add(aState) {
+			nameBuilder.WriteString("|")
 			stateName := nameBuilder.String()
 			log.Default().Printf("Creating out state: %s", stateName)
 			outStates = append(outStates, stateName)
-			outAFD.Transitions[stateName] = map[lib.AlphabetInput]lib.AFDState{}
+			outAFD.Transitions[stateName] = make(map[lib.AlphabetInput]lib.AFDState)
+		}
+	}
+
+	// Now get all transitions...
+	newAFDStates := outAFD.GetAllStates()
+	for _, combinedStates := range newAFDStates {
+		parts := strings.Split(combinedStates, "|")
+
+		for idx := 1; idx < len(parts); idx += 2 {
+			state := parts[idx]
+			originalStateTransitions := afd.Transitions[state]
+
+			for input, outState := range originalStateTransitions {
+				// Find the state from the OutAFD that contains the outState
+				for _, newState := range newAFDStates {
+					if strings.Contains(newState, outState) {
+						outAFD.Transitions[combinedStates][input] = newState
+						break
+					}
+				}
+			}
 		}
 	}
 
