@@ -19,6 +19,14 @@ type TableRow struct {
     simbol *rune
 }
 
+type TableRow struct {
+    nullable bool
+    firtspos []int
+    lastpos []int
+    followpos []int
+    simbol *rune
+}
+
 func (b *BST) Insert(n *BSTNode) {
 	b.root = b.root.insert(n)
 }
