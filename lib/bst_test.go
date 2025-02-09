@@ -56,6 +56,67 @@ func TestBST(t *testing.T) {
     }
 }
 
+// Test Epsilon value
+func TestEpsilon(t *testing.T) {
+    nodes := []*BSTNode{
+        {Key: 0, Val: CreateOperatorToken(OR)},
+        {Key: 1, Val: CreateValueToken('a')},
+        {Key: 2, Val: CreateEpsilonValue()},
+    }
+
+    tree := new(BST)
+
+    // Insertar nodos
+    for _, node := range nodes {
+        tree.Insert(node)
+    }
+
+    // in-order transverse
+    got := tree.List()
+
+    expectedVals := []RX_Token{CreateEpsilonValue(),CreateValueToken('a'),CreateOperatorToken(OR)}
+
+    // Verifies each node 
+    for i, node := range got {
+        if node.Val.value != nil && expectedVals[i].value != nil {
+            if *node.Val.value != *expectedVals[i].value {
+                t.Errorf("Nodo incorrecto en posición %d: esperado (%v) pero obtuvo (%v)", 
+                    i, *expectedVals[i].value, *node.Val.value)
+            }
+        } else if node.Val.operator != nil && expectedVals[i].operator != nil {
+            if *node.Val.operator != *expectedVals[i].operator {
+                t.Errorf("Nodo incorrecto en posición %d: esperado (%d) pero obtuvo (%d)", 
+                    i, *expectedVals[i].operator, *node.Val.operator)
+            }
+        } else {
+            t.Errorf("Nodo incorrecto en posición %d: los tipos de valor no coinciden", i)
+        }
+    }
+
+    table := convertTreeToTable(got)
+
+    expectedFirstPos := [][]int{{}, {1}, {1}}
+	expectedLastPos := [][]int{{}, {1}, {1}}
+    expectedFollowPos := [][]int{{},{},{}}
+	expectedNullable := []bool{true, false, true}
+
+    for i, row := range table {
+		if !equalSlices(row.firtspos, expectedFirstPos[i]) {
+			t.Errorf("Error en firstpos en índice %d: esperado %v, obtenido %v", i, expectedFirstPos[i], row.firtspos)
+		}
+		if !equalSlices(row.lastpos, expectedLastPos[i]) {
+			t.Errorf("Error en lastpos en índice %d: esperado %v, obtenido %v", i, expectedLastPos[i], row.lastpos)
+		}
+        if !equalSlices(row.followpos, expectedFollowPos[i]) {
+			t.Errorf("Error en lastpos en índice %d: esperado %v, obtenido %v", i, expectedFollowPos[i], row.followpos)
+		}
+
+		if row.nullable != expectedNullable[i] {
+			t.Errorf("Error en nullable en índice %d: esperado %v, obtenido %v", i, expectedNullable[i], row.nullable)
+		}
+	}
+}
+
 // Class example
 func TestExampleBST(t *testing.T) {
     // Node Creation

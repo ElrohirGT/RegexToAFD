@@ -83,7 +83,7 @@ func convertTreeToTable(nodes []*BSTNode) []*TableRow {
     for i, v := range nodes {
         newRow := new(TableRow)
 
-        if v.Val.value != nil {
+        if v.Val.value != nil && v.Val.value.HasValue() {
             // nullable
             newRow.nullable = false
 
@@ -92,7 +92,9 @@ func convertTreeToTable(nodes []*BSTNode) []*TableRow {
 
             // lastpos
             newRow.lastpos = append(newRow.lastpos, i)
-            
+
+        } else if v.Val.value != nil && !v.Val.value.HasValue() {
+            newRow.nullable = true
         } else if *v.Val.operator == AND {
             //nullable
             newRow.nullable = table[i-2].nullable == true && newRow.nullable == true
