@@ -42,7 +42,7 @@ func TestBST(t *testing.T) {
 
         if node.Val.value != nil && expectedVals[i].value != nil {
             if *node.Val.value != *expectedVals[i].value {
-                t.Errorf("Nodo incorrecto en posición %d: esperado (%c) pero obtuvo (%c)", 
+                t.Errorf("Nodo incorrecto en posición %d: esperado (%v) pero obtuvo (%v)", 
                     i, *expectedVals[i].value, *node.Val.value)
             }
         } else if node.Val.operator != nil && expectedVals[i].operator != nil {
@@ -116,7 +116,7 @@ func TestExampleBST(t *testing.T) {
 
         if node.Val.value != nil && expectedVals[i].value != nil {
             if *node.Val.value != *expectedVals[i].value {
-                t.Errorf("Nodo incorrecto en posición %d: esperado (%c) pero obtuvo (%c)", 
+                t.Errorf("Nodo incorrecto en posición %d: esperado (%v) pero obtuvo (%v)", 
                     i, *expectedVals[i].value, *node.Val.value)
             }
         } else if node.Val.operator != nil && expectedVals[i].operator != nil {
