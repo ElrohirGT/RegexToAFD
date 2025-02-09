@@ -43,6 +43,7 @@ func (self *AFD) MarkIfDistinguishable(aState *AFDState, bState *AFDState, table
 	}
 
 	if *aState == *bState {
+		table.AddOrUpdate(*aState, *bState, EQUIVALENT)
 		return EQUIVALENT
 	}
 
@@ -59,7 +60,13 @@ func (self *AFD) MarkIfDistinguishable(aState *AFDState, bState *AFDState, table
 			panic(msg)
 		}
 
-		if DISTINCT == self.MarkIfDistinguishable(&aOutState, &bOutState, table) {
+		if aOutState == *aState && bOutState == *bState ||
+			bOutState == *aState && aOutState == *bState {
+			continue
+		}
+
+		derivedType := self.MarkIfDistinguishable(&aOutState, &bOutState, table)
+		if DISTINCT == derivedType {
 			table.AddOrUpdate(*aState, *bState, DISTINCT)
 			return DISTINCT
 		}
@@ -130,7 +137,15 @@ func (self *AFDStateTable[T]) AddIfNotExists(a AFDState, b AFDState, stateType T
 
 func (self *AFDStateTable[T]) AddOrUpdate(a AFDState, b AFDState, stateType T) {
 	s := *self
+
+	if _, found := s[a]; !found {
+		s[a] = map[AFDState]T{}
+	}
 	s[a][b] = stateType
+
+	if _, found := s[b]; !found {
+		s[b] = map[AFDState]T{}
+	}
 	s[b][a] = stateType
 }
 
