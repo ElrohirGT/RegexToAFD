@@ -192,6 +192,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
         }
     }
 
+    // Set AFD initial state
     afd.InitialState = convertSliceIntToString(table[len(table) -1].firtspos)
     
     var states Queue[string]
@@ -200,6 +201,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
     var visited Set[string]
     visited.Add(afd.InitialState)
 
+    // Determines transitions for AFD
     for !states.IsEmpty() {
         currentState, _ := states.Dequeue()
 
@@ -223,6 +225,14 @@ func convertFromTableToAFD(table []TableRow) *AFD {
         }
 
     }
+
+    // Determines final states
+    for i := range visited {
+        if strings.Contains(i, string(len(table)-2)) {
+            afd.AcceptanceStates.Add(i)
+        }
+    }
+
     return afd
 }
 
