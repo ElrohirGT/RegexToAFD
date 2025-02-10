@@ -1,6 +1,9 @@
 package lib
 
-import "fmt"
+import (
+    "fmt"
+    "strings"
+)
 
 type AFDState = string
 type AlphabetInput = string
@@ -175,4 +178,46 @@ func (self *AFDStateTable[T]) Get(a *AFDState, b *AFDState) (T, bool) {
 	}
 
 	return defaultPairType, false
+}
+
+func convertFromTableToAFD(table []TableRow) *AFD {
+    afd := new(AFD)
+
+    var alphabet Set[string]
+
+    // recognizes the alphabet of the afd
+    for i := range table {
+        if table[i].simbol != "" {
+            alphabet.Add(table[i].simbol)
+        }
+    }
+
+    afd.InitialState = convertSliceIntToString(table[len(table) -1].firtspos)
+    
+    var states Set[string]
+    states.Add(afd.InitialState)
+
+    for value := range alphabet {
+        var nextState []int
+        for index := range afd.InitialState {
+            if table[index].simbol == value {
+                nextState = append(nextState, table[index].followpos ...)
+            }
+        }
+        str_state := convertSliceIntToString(nextState)
+        states.Add(str_state)
+        afd.Transitions[afd.InitialState][value] = str_state 
+
+    }
+
+    return afd
+}
+
+func convertSliceIntToString(slice []int) string {
+    var sb strings.Builder
+    for _, i := range slice {
+        sb.WriteString(fmt.Sprintf("%d", i))
+    }
+
+    return sb.String()
 }
