@@ -194,22 +194,35 @@ func convertFromTableToAFD(table []TableRow) *AFD {
 
     afd.InitialState = convertSliceIntToString(table[len(table) -1].firtspos)
     
-    var states Set[string]
-    states.Add(afd.InitialState)
+    var states Queue[string]
+    states.Enqueue(afd.InitialState)
 
-    for value := range alphabet {
-        var nextState []int
-        for index := range afd.InitialState {
-            if table[index].simbol == value {
-                nextState = append(nextState, table[index].followpos ...)
+    var visited Set[string]
+    visited.Add(afd.InitialState)
+
+    for !states.IsEmpty() {
+        currentState, _ := states.Dequeue()
+
+        for value := range alphabet {
+            var nextState []int
+            for _, index := range currentState {
+                if table[index].simbol == value {
+                    nextState = append(nextState, table[index].followpos ...)
+                }
+            }
+            strNextState := convertSliceIntToString(nextState)
+
+            if strNextState != "" {
+                afd.Transitions[currentState][value] = strNextState
+
+                if !visited.Contains(strNextState) {
+                    visited.Add(strNextState)
+                    states.Enqueue(strNextState)
+                }
             }
         }
-        str_state := convertSliceIntToString(nextState)
-        states.Add(str_state)
-        afd.Transitions[afd.InitialState][value] = str_state 
 
     }
-
     return afd
 }
 
