@@ -16,7 +16,7 @@ func (q *Queue[T]) Enqueue(item T) {
 
 // Eliminates and returns the first element of Queue
 func (q *Queue[T]) Dequeue() (T, bool) {
-    if q.isEmpty() {
+    if q.IsEmpty() {
         var zeroValue T
         return zeroValue, false
     }
@@ -26,6 +26,6 @@ func (q *Queue[T]) Dequeue() (T, bool) {
 }
 
 // Verifies if Queue is empty
-func (q *Queue[T]) isEmpty() bool {
+func (q *Queue[T]) IsEmpty() bool {
     return len(q.items) == 0
 }
