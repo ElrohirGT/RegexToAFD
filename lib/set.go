@@ -25,3 +25,7 @@ func (self *Set[T]) Add(val T) bool {
 
 	return !alreadyAdded
 }
+
+func NewSet[T comparable]() Set[T] {
+    return make(Set[T])
+}

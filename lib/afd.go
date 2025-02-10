@@ -3,6 +3,7 @@ package lib
 import (
     "fmt"
     "strings"
+    "strconv"
 )
 
 type AFDState = string
@@ -181,9 +182,12 @@ func (self *AFDStateTable[T]) Get(a *AFDState, b *AFDState) (T, bool) {
 }
 
 func convertFromTableToAFD(table []TableRow) *AFD {
-    afd := new(AFD)
+    afd := &AFD{
+        Transitions: make(map[AFDState]map[AlphabetInput]AFDState),
+        AcceptanceStates: NewSet[string](),
+    }
 
-    var alphabet Set[string]
+    alphabet := NewSet[string]()
 
     // recognizes the alphabet of the afd
     for i := range table {
@@ -198,7 +202,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
     var states Queue[string]
     states.Enqueue(afd.InitialState)
 
-    var visited Set[string]
+    visited := NewSet[string]()
     visited.Add(afd.InitialState)
 
     // Determines transitions for AFD
@@ -207,7 +211,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
 
         for value := range alphabet {
             var nextState []int
-            for _, index := range currentState {
+            for _, index := range stringToIntSlice(currentState) {
                 if table[index].simbol == value {
                     nextState = append(nextState, table[index].followpos ...)
                 }
@@ -215,6 +219,9 @@ func convertFromTableToAFD(table []TableRow) *AFD {
             strNextState := convertSliceIntToString(nextState)
 
             if strNextState != "" {
+                if _, exists := afd.Transitions[currentState]; !exists {
+                    afd.Transitions[currentState] = make(map[AlphabetInput]AFDState)
+                }
                 afd.Transitions[currentState][value] = strNextState
 
                 if !visited.Contains(strNextState) {
@@ -228,7 +235,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
 
     // Determines final states
     for i := range visited {
-        if strings.Contains(i, string(len(table)-2)) {
+        if strings.Contains(i, strconv.Itoa(len(table)-2)) {
             afd.AcceptanceStates.Add(i)
         }
     }
@@ -243,4 +250,17 @@ func convertSliceIntToString(slice []int) string {
     }
 
     return sb.String()
+}
+
+func stringToIntSlice(str string) []int {
+    var intSlice []int
+    strSlice := strings.Split(str, ",")
+    for _, s := range strSlice {
+        num, err := strconv.Atoi(s)
+        if err != nil {
+            return []int{}
+        }
+        intSlice = append(intSlice, num)
+    }
+    return intSlice
 }
