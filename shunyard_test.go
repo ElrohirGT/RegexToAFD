@@ -345,6 +345,8 @@ func TestNotRanges(t *testing.T) {
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('ñ'),
+			lib.CreateOperatorToken(lib.OR),
 		},
 		alphabet: NewAlphabetFromString("abcdefghijklmnñopqrstuvwxyz"),
 	})
