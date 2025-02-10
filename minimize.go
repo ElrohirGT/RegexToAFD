@@ -129,5 +129,26 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 		}
 	}
 
+	// Now we find the initial state...
+	for _, combinedStates := range newAFDStates {
+		initialStateFound := false
+		parts := strings.Split(combinedStates, "|")
+
+		for idx := 1; idx < len(parts); idx += 2 {
+			state := parts[idx]
+
+			if state == afd.InitialState {
+				outAFD.InitialState = combinedStates
+				initialStateFound = true
+				break
+			}
+		}
+
+		// Initial state found...
+		if initialStateFound {
+			break
+		}
+	}
+
 	return outAFD
 }
