@@ -234,7 +234,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			log.Default().Printf("Recursing with: `%s`...", previousExpr)
 			toPostFix(alph, &previousExpr, &shunStack{}, output)
 			*output = append(*output, l.CreateOperatorToken(l.ZERO_OR_MANY))
-			*output = append(*output, l.CreateOperatorToken(l.OR))
+			*output = append(*output, l.CreateOperatorToken(l.AND))
 
 			previousExprStack.AppendTop("+")
 			previousExprStack.Push("")
