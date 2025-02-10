@@ -38,3 +38,22 @@ func TestConvertFromTableToAFD(t *testing.T) {
 		t.Errorf("Expected final state %s to be in AcceptanceStates", expectedFinalState)
 	}
 }
+
+// Test AFD derivation
+func TestDerivation(t *testing.T) {
+    afd := AFD{
+        InitialState: "1",
+        Transitions: map[string]map[string]string{
+            "1": {"a": "2"},
+        },
+        AcceptanceStates: Set[string]{"2": struct{}{}},
+    }
+
+    str_example := "a"
+
+    result := afd.derivation(str_example)
+
+    if !result{
+        t.Errorf("Final state not in acceptance state")
+    }
+}

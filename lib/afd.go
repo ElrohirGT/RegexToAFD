@@ -243,6 +243,15 @@ func convertFromTableToAFD(table []TableRow) *AFD {
     return afd
 }
 
+func (self *AFD) derivation(w string) bool {
+    state := self.InitialState
+    for _, ch := range w {
+        state = self.Transitions[state][string(ch)]
+    }
+
+    return self.AcceptanceStates.Contains(state)
+}
+
 func convertSliceIntToString(slice []int) string {
     var sb strings.Builder
     for _, i := range slice {
