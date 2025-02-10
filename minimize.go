@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"slices"
 	"strings"
 
@@ -102,7 +101,6 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 		if statesAlreadyFused.Add(aState) {
 			nameBuilder.WriteString("|")
 			stateName := nameBuilder.String()
-			log.Default().Printf("Creating out state: %s", stateName)
 			outStates = append(outStates, stateName)
 			outAFD.Transitions[stateName] = make(map[lib.AlphabetInput]lib.AFDState)
 		}
@@ -148,6 +146,22 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 		if initialStateFound {
 			break
 		}
+	}
+
+	// Finding accepted states...
+	outAFD.AcceptanceStates = lib.Set[lib.AFDState]{}
+	for _, combinedStates := range newAFDStates {
+		parts := strings.Split(combinedStates, "|")
+
+		for idx := 1; idx < len(parts); idx += 2 {
+			state := parts[idx]
+
+			if afd.AcceptanceStates.Contains(state) {
+				outAFD.AcceptanceStates.Add(combinedStates)
+				break
+			}
+		}
+
 	}
 
 	return outAFD

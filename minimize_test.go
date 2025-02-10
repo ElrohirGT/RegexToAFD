@@ -20,7 +20,7 @@ func compareAFDs(t *testing.T, expected *lib.AFD, result *lib.AFD) {
 	for state := range result.AcceptanceStates {
 		if _, found := expected.AcceptanceStates[state]; !found {
 			t.Fatal(fmt.Sprintf(errorMsgFormat,
-				fmt.Sprintf("The state `%s` was not found inside the expected set!\nExpected: %#v", state, expected.AcceptanceStates),
+				fmt.Sprintf("The state `%s` was not found inside the expected acceptance states set!\nExpected: %#v", state, expected.AcceptanceStates),
 				*expected,
 				*result))
 		}
@@ -85,24 +85,24 @@ func TestVideoAFD(t *testing.T) {
 		AcceptanceStates: lib.Set[lib.AFDState]{"3": struct{}{}, "5": struct{}{}},
 	}
 	expectedAFD := lib.AFD{
-		InitialState: "1",
+		InitialState: "|1|",
 		Transitions: map[lib.AFDState]map[lib.AlphabetInput]lib.AFDState{
-			"1": {
-				"a": "246",
-				"b": "246",
+			"|1|": {
+				"a": "|2|4|6|",
+				"b": "|2|4|6|",
 			},
 
-			"246": {
-				"a": "246",
-				"b": "35",
+			"|2|4|6|": {
+				"a": "|2|4|6|",
+				"b": "|3|5|",
 			},
 
-			"35": {
-				"a": "35",
-				"b": "35",
+			"|3|5|": {
+				"a": "|3|5|",
+				"b": "|3|5|",
 			},
 		},
-		AcceptanceStates: lib.Set[lib.AFDState]{"35": struct{}{}},
+		AcceptanceStates: lib.Set[lib.AFDState]{"|3|5|": struct{}{}},
 	}
 
 	result := MinimizeAFD(originalAFD)
