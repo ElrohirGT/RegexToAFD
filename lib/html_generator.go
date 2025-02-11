@@ -4,6 +4,7 @@ import (
     "fmt"
     "os"
     "math"
+    "strings"
 )
 
 var statePositions = map[string][2]int{
@@ -18,6 +19,17 @@ func (afd *AFD) ToSVG() string {
 
 	radius := 30 // Radio de los nodos
 
+	// Mapa para agrupar etiquetas por transición
+	transitionLabels := make(map[[2]string][]string)
+
+	// Recopilar transiciones
+	for from, transitions := range afd.Transitions {
+		for input, to := range transitions {
+			key := [2]string{from, to}
+			transitionLabels[key] = append(transitionLabels[key], input)
+		}
+	}
+
 	// Dibujar los estados
 	for state, pos := range statePositions {
 		x, y := pos[0], pos[1]
@@ -29,51 +41,70 @@ func (afd *AFD) ToSVG() string {
 		svg += fmt.Sprintf(`<text x="%d" y="%d" font-size="16" text-anchor="middle" fill="black">%s</text>`, x, y+5, state)
 	}
 
-	// Dibujar las transiciones
-	for from, transitions := range afd.Transitions {
-		for input, to := range transitions {
-			x1, y1 := statePositions[from][0], statePositions[from][1]
-			x2, y2 := statePositions[to][0], statePositions[to][1]
+	// Dibujar las transiciones sin sobrescribir etiquetas
+	for key, inputs := range transitionLabels {
+		from, to := key[0], key[1]
+		x1, y1 := statePositions[from][0], statePositions[from][1]
+		x2, y2 := statePositions[to][0], statePositions[to][1]
 
-			// Calcular la dirección del vector
+		labels := strings.Join(inputs, ", ") // Combinar etiquetas
+
+		if from == to {
+			// 🔄 Dibujar loop más abajo
+			loopRadius := 40
+			offset := 0
+
+			svg += fmt.Sprintf(
+				`<path d="M %d %d C %d %d, %d %d, %d %d" stroke="black" stroke-width="2" fill="none" marker-end="url(#arrow)"/>`,
+				x1, y1-radius-offset,   
+				x1+loopRadius+10, y1-radius-loopRadius-offset-10, 
+				x1-loopRadius-10, y1-radius-loopRadius-offset-10, 
+				x1, y1-radius-offset,   
+			)
+
+			// Etiqueta en el loop
+			svg += fmt.Sprintf(
+				`<text x="%d" y="%d" font-size="14" fill="black">%s</text>`,
+				x1, y1-radius-loopRadius-15, labels)
+
+		} else {
+			// 🔀 Dibujar transiciones normales
 			dx := float64(x2 - x1)
 			dy := float64(y2 - y1)
 			dist := math.Sqrt(dx*dx + dy*dy)
 
 			if dist > 0 {
-				// Normalizar el vector de dirección
 				unitDx := dx / dist
 				unitDy := dy / dist
-
-				// Ajustar los puntos para que la línea comience y termine en los bordes del nodo
-				x1 = x1 + int(unitDx*float64(radius))
-				y1 = y1 + int(unitDy*float64(radius))
-				x2 = x2 - int(unitDx*float64(radius))
-				y2 = y2 - int(unitDy*float64(radius))
+				x1 += int(unitDx * float64(radius))
+				y1 += int(unitDy * float64(radius))
+				x2 -= int(unitDx * float64(radius))
+				y2 -= int(unitDy * float64(radius))
 			}
 
-			// Dibujar línea de transición con flecha
+			// Línea de transición
 			svg += fmt.Sprintf(
 				`<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>`,
 				x1, y1, x2, y2)
 
-			// Etiqueta de transición
+			// Etiqueta de transición combinada
 			svg += fmt.Sprintf(
 				`<text x="%d" y="%d" font-size="14" fill="black">%s</text>`,
-				(x1+x2)/2, (y1+y2)/2, input)
+				(x1+x2)/2, (y1+y2)/2 - 5, labels)
 		}
 	}
 
-	// Definir flechas
+	// Definir flechas más grandes
 	svg += `<defs>
-		<marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-			<path d="M 0 0 L 10 5 L 0 10 z" fill="black"/>
+		<marker id="arrow" markerWidth="15" markerHeight="15" refX="12" refY="6" orient="auto">
+			<path d="M 0 0 L 12 6 L 0 12 z" fill="black"/>
 		</marker>
 	</defs>`
 
 	svg += `</svg>`
 	return svg
 }
+
 
 
 func GenerateHTML(svgContent, outputHTML string) error {
