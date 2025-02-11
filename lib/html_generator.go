@@ -7,17 +7,27 @@ import (
     "strings"
 )
 
-var statePositions = map[string][2]int{
-    "q0": {100, 200},
-	"q1": {300, 100},
-	"q2": {500, 200},
+func generatePositions(afd *AFD) map[string][2]float64 {
+    pi_value := 0.0
+    centerX, centerY := 200.0, 300.0
+    radius := 120.0
+    positions := make(map[string][2]float64)
+    for key := range afd.Transitions {
+        sin, cos := math.Sincos(pi_value)
+        positions[key] = [2]float64{centerX + radius*cos,centerY + radius*sin}
+        pi_value += 2*math.Pi / float64(len(afd.Transitions))
+    }
+
+    return positions
 }
 
 func (afd *AFD) ToSVG() string {
-	svg := `<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">`
+    statePositions := generatePositions(afd)
+
+	svg := `<svg width="50%" height="50%" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">`
 	svg += `<rect width="100%" height="100%" fill="white"/>`
 
-	radius := 30 // Radio de los nodos
+	radius := 30.0 // Radio de los nodos
 
 	// Mapa para agrupar etiquetas por transición
 	transitionLabels := make(map[[2]string][]string)
@@ -37,8 +47,8 @@ func (afd *AFD) ToSVG() string {
 		if afd.AcceptanceStates.Contains(state) {
 			fill = "lightgreen"
 		}
-		svg += fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" stroke="black" stroke-width="2" fill="%s"/>`, x, y, radius, fill)
-		svg += fmt.Sprintf(`<text x="%d" y="%d" font-size="16" text-anchor="middle" fill="black">%s</text>`, x, y+5, state)
+		svg += fmt.Sprintf(`<circle cx="%f" cy="%f" r="%f" stroke="black" stroke-width="2" fill="%s"/>`, x, y, radius, fill)
+		svg += fmt.Sprintf(`<text x="%f" y="%f" font-size="16" text-anchor="middle" fill="black">%s</text>`, x, y+5, state)
 	}
 
 	// Dibujar las transiciones sin sobrescribir etiquetas
@@ -51,20 +61,19 @@ func (afd *AFD) ToSVG() string {
 
 		if from == to {
 			// 🔄 Dibujar loop más abajo
-			loopRadius := 40
-			offset := 0
+			loopRadius := 40.0
 
 			svg += fmt.Sprintf(
-				`<path d="M %d %d C %d %d, %d %d, %d %d" stroke="black" stroke-width="2" fill="none" marker-end="url(#arrow)"/>`,
-				x1, y1-radius-offset,   
-				x1+loopRadius+10, y1-radius-loopRadius-offset-10, 
-				x1-loopRadius-10, y1-radius-loopRadius-offset-10, 
-				x1, y1-radius-offset,   
+				`<path d="M %f %f C %f %f, %f %f, %f %f" stroke="black" stroke-width="2" fill="none" marker-end="url(#arrow)"/>`,
+				x1, y1-radius,   
+				x1+loopRadius+10, y1-radius-loopRadius-10, 
+				x1-loopRadius-10, y1-radius-loopRadius-10, 
+				x1, y1-radius,   
 			)
 
 			// Etiqueta en el loop
 			svg += fmt.Sprintf(
-				`<text x="%d" y="%d" font-size="14" fill="black">%s</text>`,
+				`<text x="%f" y="%f" font-size="14" fill="black">%s</text>`,
 				x1, y1-radius-loopRadius-15, labels)
 
 		} else {
@@ -76,20 +85,20 @@ func (afd *AFD) ToSVG() string {
 			if dist > 0 {
 				unitDx := dx / dist
 				unitDy := dy / dist
-				x1 += int(unitDx * float64(radius))
-				y1 += int(unitDy * float64(radius))
-				x2 -= int(unitDx * float64(radius))
-				y2 -= int(unitDy * float64(radius))
+				x1 += unitDx * float64(radius)
+				y1 += unitDy * float64(radius)
+				x2 -= unitDx * float64(radius)
+				y2 -= unitDy * float64(radius)
 			}
 
 			// Línea de transición
 			svg += fmt.Sprintf(
-				`<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>`,
+				`<line x1="%f" y1="%f" x2="%f" y2="%f" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>`,
 				x1, y1, x2, y2)
 
 			// Etiqueta de transición combinada
 			svg += fmt.Sprintf(
-				`<text x="%d" y="%d" font-size="14" fill="black">%s</text>`,
+				`<text x="%f" y="%f" font-size="14" fill="black">%s</text>`,
 				(x1+x2)/2, (y1+y2)/2 - 5, labels)
 		}
 	}
