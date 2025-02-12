@@ -196,6 +196,13 @@ func ConvertFromTableToAFD(table []*TableRow) *AFD {
         }
     }
 
+    // Creates trap state
+    trapState := "TRAP"
+    afd.Transitions[trapState] = make (map[AlphabetInput]AFDState)
+    for value := range alphabet {
+        afd.Transitions[trapState][value] = trapState
+    }
+
     // Set AFD initial state
     afd.InitialState = convertSliceIntToString(table[len(table) -1].firtspos)
     
@@ -214,27 +221,30 @@ func ConvertFromTableToAFD(table []*TableRow) *AFD {
             for _, index := range stringToIntSlice(currentState) {
                 if table[index].simbol == value {
                     nextState = append(nextState, table[index].followpos ...)
-                }
+                } 
             }
+
             strNextState := convertSliceIntToString(nextState)
+            if strNextState == "" {
+                strNextState = trapState
+            }
 
-            if strNextState != "" {
-                if _, exists := afd.Transitions[currentState]; !exists {
+            if _, exists := afd.Transitions[currentState]; !exists {
                     afd.Transitions[currentState] = make(map[AlphabetInput]AFDState)
-                }
-                afd.Transitions[currentState][value] = strNextState
+            }
 
-                if !visited.Contains(strNextState) {
-                    visited.Add(strNextState)
-                    states.Enqueue(strNextState)
-                }
+            afd.Transitions[currentState][value] = strNextState
+
+            if strNextState != trapState && !visited.Contains(strNextState) {
+                visited.Add(strNextState)
+                states.Enqueue(strNextState)
             }
         }
 
     }
 
     // Determines final states
-    finalNode := table[len(table)-4].followpos
+    finalNode := table[len(table)-2].followpos
 
     for i := range visited {
         if strings.Contains(i, convertSliceIntToString(finalNode)) {
