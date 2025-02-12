@@ -105,7 +105,43 @@ func TestVideoAFD(t *testing.T) {
 		AcceptanceStates: lib.Set[lib.AFDState]{"|3|5|": struct{}{}},
 	}
 
-	result := MinimizeAFD(originalAFD)
+	result := MinimizeAFD(&originalAFD)
 
-	compareAFDs(t, &expectedAFD, &result)
+	compareAFDs(t, &expectedAFD, result)
+}
+
+func TestUnminimizableAFD(t *testing.T) {
+	originalAndExpected := lib.AFD{
+		InitialState: "02",
+		Transitions: map[lib.AFDState]map[lib.AlphabetInput]lib.AFDState{
+			"02": {
+				"a": "02",
+				"b": "4",
+			},
+			"4": {
+				"a": "4",
+				"b": "4",
+			},
+		},
+		AcceptanceStates: lib.Set[lib.AFDState]{"4": struct{}{}},
+	}
+
+	expected := lib.AFD{
+		InitialState: "|02|",
+		Transitions: map[lib.AFDState]map[lib.AlphabetInput]lib.AFDState{
+			"|02|": {
+				"a": "|02|",
+				"b": "|4|",
+			},
+			"|4|": {
+				"a": "|4|",
+				"b": "|4|",
+			},
+		},
+		AcceptanceStates: lib.Set[lib.AFDState]{"|4|": struct{}{}},
+	}
+
+	result := MinimizeAFD(&originalAndExpected)
+
+	compareAFDs(t, &expected, result)
 }
