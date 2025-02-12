@@ -191,7 +191,7 @@ func ConvertFromTableToAFD(table []*TableRow) *AFD {
 
     // recognizes the alphabet of the afd
     for i := range table {
-        if table[i].simbol != "" {
+        if table[i].simbol != "" && table[i].simbol != "°" {
             alphabet.Add(table[i].simbol)
         }
     }
@@ -244,10 +244,10 @@ func ConvertFromTableToAFD(table []*TableRow) *AFD {
     }
 
     // Determines final states
-    finalNode := table[len(table)-2].followpos
+    finalNode := len(table)-2
 
     for i := range visited {
-        if strings.Contains(i, convertSliceIntToString(finalNode)) {
+        if strings.Contains(i, fmt.Sprintf("%d", finalNode)) {
             afd.AcceptanceStates.Add(i)
         }
     }
