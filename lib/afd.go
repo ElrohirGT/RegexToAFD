@@ -181,7 +181,7 @@ func (self *AFDStateTable[T]) Get(a *AFDState, b *AFDState) (T, bool) {
 	return defaultPairType, false
 }
 
-func convertFromTableToAFD(table []TableRow) *AFD {
+func ConvertFromTableToAFD(table []*TableRow) *AFD {
     afd := &AFD{
         Transitions: make(map[AFDState]map[AlphabetInput]AFDState),
         AcceptanceStates: NewSet[string](),
@@ -234,8 +234,10 @@ func convertFromTableToAFD(table []TableRow) *AFD {
     }
 
     // Determines final states
+    finalNode := table[len(table)-4].followpos
+
     for i := range visited {
-        if strings.Contains(i, strconv.Itoa(len(table)-2)) {
+        if strings.Contains(i, convertSliceIntToString(finalNode)) {
             afd.AcceptanceStates.Add(i)
         }
     }
@@ -243,7 +245,7 @@ func convertFromTableToAFD(table []TableRow) *AFD {
     return afd
 }
 
-func (self *AFD) derivation(w string) bool {
+func (self *AFD) Derivation(w string) bool {
     state := self.InitialState
     for _, ch := range w {
         state = self.Transitions[state][string(ch)]
@@ -263,9 +265,8 @@ func convertSliceIntToString(slice []int) string {
 
 func stringToIntSlice(str string) []int {
     var intSlice []int
-    strSlice := strings.Split(str, ",")
-    for _, s := range strSlice {
-        num, err := strconv.Atoi(s)
+    for _, s := range str {
+        num, err := strconv.Atoi(string(s))
         if err != nil {
             return []int{}
         }

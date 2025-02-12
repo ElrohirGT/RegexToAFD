@@ -8,7 +8,7 @@ import (
 	"github.com/ElrohirGT/RegexToAFD/lib"
 )
 
-func getNonAcceptanceStates(afd lib.AFD) []string {
+func getNonAcceptanceStates(afd *lib.AFD) []string {
 	nonAcceptedStates := []string{}
 	for state := range afd.Transitions {
 		_, found := afd.AcceptanceStates[state]
@@ -21,7 +21,7 @@ func getNonAcceptanceStates(afd lib.AFD) []string {
 	return nonAcceptedStates
 }
 
-func MinimizeAFD(afd lib.AFD) lib.AFD {
+func MinimizeAFD(afd *lib.AFD) *lib.AFD {
 
 	// acceptedStates := afd.AcceptanceStates
 	// nonAcceptedStates := getNonAcceptanceStates(afd)
@@ -164,5 +164,5 @@ func MinimizeAFD(afd lib.AFD) lib.AFD {
 
 	}
 
-	return outAFD
+	return &outAFD
 }

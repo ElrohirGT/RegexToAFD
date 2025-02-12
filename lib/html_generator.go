@@ -12,10 +12,34 @@ func generatePositions(afd *AFD) map[string][2]float64 {
     centerX, centerY := 200.0, 300.0
     radius := 120.0
     positions := make(map[string][2]float64)
-    for key := range afd.Transitions {
+
+    // Recopilar todos los estados (no solo los que tienen transiciones)
+    allStates := make(map[string]bool)
+
+    // Agregar estados desde las transiciones
+    for from, transitions := range afd.Transitions {
+        allStates[from] = true
+        for _, to := range transitions {
+            allStates[to] = true
+        }
+    }
+
+    // Agregar estados que no aparezcan en las transiciones (como el estado final)
+    for state := range afd.AcceptanceStates {
+        allStates[state] = true
+    }
+
+    // Convertir a slice para iterar de manera ordenada
+    stateList := make([]string, 0, len(allStates))
+    for state := range allStates {
+        stateList = append(stateList, state)
+    }
+
+    // Generar posiciones circulares para todos los estados
+    for _, state := range stateList {
         sin, cos := math.Sincos(pi_value)
-        positions[key] = [2]float64{centerX + radius*cos,centerY + radius*sin}
-        pi_value += 2*math.Pi / float64(len(afd.Transitions))
+        positions[state] = [2]float64{centerX + radius*cos, centerY + radius*sin}
+        pi_value += 2 * math.Pi / float64(len(stateList))
     }
 
     return positions

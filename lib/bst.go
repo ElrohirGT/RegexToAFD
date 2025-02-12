@@ -20,14 +20,18 @@ type TableRow struct {
 }
 
 func (b *BST) Insert(n *BSTNode) {
-	b.root = b.root.insert(n)
+    if b.root == nil {
+        b.root = n
+        return
+    }
+	b.root.insert(n)
 }
 
 func (b *BSTNode) insert(n *BSTNode) *BSTNode {
 	if b == nil {
 		return n
 	}
-	if n.Val.value == nil {
+	if n.Val.operator != nil {
 		b.left = b.left.insert(n)
 	} else {
 		if b.right == nil && *b.Val.operator != ZERO_OR_MANY {
@@ -69,15 +73,18 @@ func (b *BST) List() []*BSTNode {
     return result
 }
 
-func (b *BST) insertion(postfix []RX_Token) {
+func (b *BST) Insertion(postfix []RX_Token) {
 	for i, v := range postfix {
 		node := &BSTNode{Key: i, Val: v}
 		b.Insert(node)
 	}
 }
 
-func convertTreeToTable(nodes []*BSTNode) []*TableRow {
+func ConvertTreeToTable(nodes []*BSTNode) []*TableRow {
     table := []*TableRow{}
+
+    nodes = append(nodes, &BSTNode{Key: 1, Val: CreateValueToken('°')})
+    nodes = append(nodes, &BSTNode{Key: 1, Val: CreateOperatorToken(AND)})
 
     // sets Leaf i first
     for i, v := range nodes {

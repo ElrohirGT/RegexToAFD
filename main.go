@@ -2,23 +2,52 @@ package main
 
 import (
     "fmt"
+    "os"
+    "bufio"
 
 	l "github.com/ElrohirGT/RegexToAFD/lib"
 )
 
 func main() {
-    afd := l.AFD{
-		InitialState: "q0",
-		Transitions: map[l.AFDState]map[l.AlphabetInput]l.AFDState{
-			"q0": {"0": "q1", "1": "q0"},
-			"q1": {"0": "q0", "1": "q2"},
-			"q2": {"0": "q2", "1": "q3"},
-            "q3": {"0": "q1", "1": "q2"},
-		},
-		AcceptanceStates: l.Set[string]{"2": struct{}{}},	
+
+    alph := new(Alphabet)
+    bst := new(l.BST)
+    table := []*l.TableRow{}
+    afd := new(l.AFD)
+
+    file, err := os.Open("input.txt")
+
+    if err != nil {
+        fmt.Println("Error while opening file:", err)
+        return
     }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    words := []string{} // First element -> regex, Second element -> chain
+
+    for scanner.Scan() {
+        fmt.Println(scanner.Text())
+        words = append(words, scanner.Text())
+    }
+
+    tokens := alph.ToPostfix(words[0])
+    reverseSlice(tokens)
+    bst.Insertion(tokens)
+
+    table = l.ConvertTreeToTable(bst.List())
+
+    afd = l.ConvertFromTableToAFD(table)
+    afd = MinimizeAFD(afd)
+
 	// Generar el SVG
 	svg := afd.ToSVG()
+
+    if afd.Derivation(words[1]) {
+        fmt.Println("Cadena aceptada")
+    } else {
+        fmt.Println("Cadena rechazada")
+    }
 
 	// Guardar en un HTML
 	htmlFile := "afd.html"
@@ -27,4 +56,11 @@ func main() {
 	} else {
 		fmt.Println("HTML generado:", htmlFile)
 	}
+}
+
+func reverseSlice(arr []l.RX_Token) {
+    n := len(arr)
+    for i := 0; i < n/2; i++ {
+        arr[i], arr[n-1-i] = arr[n-1-i], arr[i]
+    }
 }

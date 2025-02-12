@@ -93,7 +93,7 @@ func TestEpsilon(t *testing.T) {
         }
     }
 
-    table := convertTreeToTable(got)
+    table := ConvertTreeToTable(got)
 
     expectedFirstPos := [][]int{{}, {1}, {1}}
 	expectedLastPos := [][]int{{}, {1}, {1}}
@@ -209,7 +209,7 @@ func TestTable(t *testing.T) {
     // in-order transverse
     got := tree.List()
 
-    table := convertTreeToTable(got)
+    table := ConvertTreeToTable(got)
 
 	// Valores esperados
 	expectedFirstPos := [][]int{{0}, {1}, {0}}
@@ -262,7 +262,7 @@ func TestExampleTable(t *testing.T) {
     // in-order transverse
     got := tree.List()
 
-    table := convertTreeToTable(got)
+    table := ConvertTreeToTable(got)
 
 	// Valores esperados
 	expectedFirstPos := [][]int{{0}, {1}, {0,1},{0,1},{4},{0,1,4},{6},{0,1,4},{8},{0,1,4},{10},{0,1,4}}

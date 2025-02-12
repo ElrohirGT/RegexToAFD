@@ -4,13 +4,13 @@ import "testing"
 
 func TestConvertFromTableToAFD(t *testing.T) {
 	// Definir tabla de ejemplo
-	table := []TableRow{
+	table := []*TableRow{
 		{false, []int{0}, []int{0}, []int{1}, "a"},
 		{false, []int{1}, []int{1}, []int{}, "b"},
 		{false, []int{0}, []int{1}, []int{}, ""},
 	}
 
-	afd := convertFromTableToAFD(table)
+	afd := ConvertFromTableToAFD(table)
 
 	// Verificar estado inicial
 	expectedInitial := "0"
