@@ -1,5 +1,7 @@
 package lib
 
+import "reflect"
+
 type Optional[T any] struct {
 	isValid bool
 	value   T
@@ -24,4 +26,13 @@ func (self Optional[T]) GetValue() T {
 	} else {
 		return self.value
 	}
+}
+
+func (self *Optional[T]) Equals(other *Optional[T]) bool {
+	noneAreValid := !self.isValid && !other.isValid
+	if noneAreValid {
+		return true
+	}
+
+	return self.isValid == other.isValid && reflect.DeepEqual(self.value, other.value)
 }

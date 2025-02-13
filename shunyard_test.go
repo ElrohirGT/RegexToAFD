@@ -62,7 +62,7 @@ func assertEquals(t *testing.T, expected []lib.RX_Token, actual []lib.RX_Token, 
 	for i, expected := range expected {
 		value := actual[i]
 
-		if expected.Equals(value) {
+		if !expected.Equals(value) {
 			t.Fatalf("The result doesn't match expected!\n%v != %v\nFailed on: %s", expected, value, originalInput)
 		}
 	}

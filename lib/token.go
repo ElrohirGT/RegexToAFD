@@ -56,5 +56,14 @@ func CreateEpsilonValue() RX_Token {
 }
 
 func (self RX_Token) Equals(other RX_Token) bool {
-	return self.operator == other.operator && self.value == other.value
+	bothOpsNil := self.operator == nil && other.operator == nil
+	if !bothOpsNil {
+		if self.operator == nil || other.operator == nil {
+			return false
+		}
+
+		return *self.operator == *other.operator
+	}
+
+	return self.value.Equals(other.value)
 }
