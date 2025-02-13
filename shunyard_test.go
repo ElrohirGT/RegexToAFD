@@ -106,7 +106,7 @@ func TestOptional(t *testing.T) {
 			lib.CreateValueToken('b'),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateValueToken('c'),
-			lib.CreateEpsilonValue(),
+			lib.CreateEpsilonToken(),
 			lib.CreateOperatorToken(lib.OR),
 			lib.CreateOperatorToken(lib.AND),
 		},
@@ -119,7 +119,7 @@ func TestOptional(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
-			lib.CreateEpsilonValue(),
+			lib.CreateEpsilonToken(),
 			lib.CreateOperatorToken(lib.OR),
 			lib.CreateOperatorToken(lib.AND),
 			lib.CreateValueToken('c'),
@@ -359,6 +359,70 @@ func TestLogicEquivalence(t *testing.T) {
 	expandedResult := DEFAULT_ALPHABET.ToPostfix("(bb*a)(bb*a)*")
 
 	assertEquals(t, reducedResult, expandedResult, "Postfix inconsistency: `(b+a)+` != `(bb*a)(bb*a)*`")
+}
+
+func TestBracketsWithZeroOrMoreOperator(t *testing.T) {
+	regexp := "[^e-z]*"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+		},
+		alphabet: NewAlphabetFromString("abcdefghijklmnopqrstuvwxyz"),
+	})
+}
+
+func TestBracketsWithOptionalOperator(t *testing.T) {
+	regexp := "[^e-z]?"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateEpsilonToken(),
+			lib.CreateOperatorToken(lib.OR),
+		},
+		alphabet: NewAlphabetFromString("abcdefghijklmnopqrstuvwxyz"),
+	})
+}
+
+func TestBracketsWithOneOrMoreOperator(t *testing.T) {
+	regexp := "[^e-z]+"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+
+			lib.CreateValueToken('a'),
+			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('c'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateValueToken('d'),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
+			lib.CreateOperatorToken(lib.AND),
+		},
+		alphabet: NewAlphabetFromString("abcdefghijklmnopqrstuvwxyz"),
+	})
 }
 
 // func TestPasswordPolicy(t *testing.T) {

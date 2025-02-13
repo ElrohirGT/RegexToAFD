@@ -50,7 +50,7 @@ func CreateValueToken(value rune) RX_Token {
 	}
 }
 
-func CreateEpsilonValue() RX_Token {
+func CreateEpsilonToken() RX_Token {
 	val := CreateNull[rune]()
 	return RX_Token{
 		value: &val,
