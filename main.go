@@ -3,12 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"log"
 	"os"
 
 	l "github.com/ElrohirGT/RegexToAFD/lib"
 )
 
 func main() {
+	// Disable loggin
+	log.SetOutput(io.Discard)
 
 	// DEFAULT alphabet from program.
 	// You can define a new one using: NewAlphabetFromString
@@ -17,15 +21,7 @@ func main() {
 	table := []*l.TableRow{}
 	afd := new(l.AFD)
 
-	file, err := os.Open("input.txt")
-
-	if err != nil {
-		fmt.Println("Error while opening file:", err)
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(os.Stdin)
 	words := []string{} // First element -> regex, Second element -> chain
 
 	for scanner.Scan() {
