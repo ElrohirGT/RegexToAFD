@@ -139,6 +139,10 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			if state == IN_NEGATIVE_BRACKETS {
 				negativeBuffer.WriteByte('(')
 			} else {
+				if previousCanBeANDedTo {
+					tryToAppendWithPrecedence(stack, '.', output)
+				}
+
 				stack.Push('(')
 				previousCanBeANDedTo = false
 				state = IN_PARENTHESIS
@@ -174,6 +178,10 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			}
 
 		case '[':
+			if previousCanBeANDedTo {
+				tryToAppendWithPrecedence(stack, '.', output)
+			}
+
 			stack.Push('[')
 			nextChar := infixExpr[i+1]
 			previousCanBeANDedTo = false
