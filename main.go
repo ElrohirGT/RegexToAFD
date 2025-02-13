@@ -36,7 +36,7 @@ func main() {
 	table = l.ConvertTreeToTable(bst.List())
 
 	afd = l.ConvertFromTableToAFD(table)
-	afd = MinimizeAFD(afd)
+	//afd = MinimizeAFD(afd)
 
 	// Generar el SVG
 	svg := afd.ToSVG()

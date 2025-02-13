@@ -218,10 +218,26 @@ func ConvertFromTableToAFD(table []*TableRow) *AFD {
 
         for value := range alphabet {
             var nextState []int
-            for _, index := range stringToIntSlice(currentState) {
-                if table[index].simbol == value {
-                    nextState = append(nextState, table[index].followpos ...)
-                } 
+            nextStateSet := make(map[int]bool)
+            for _, strIndex := range strings.Split(currentState, ",") {
+                if strIndex != "" {
+                    index, err := strconv.Atoi(strIndex)
+                    if err != nil {
+                        fmt.Println("Error converting to string:", err)
+                        continue
+                    }
+
+                    if table[index].simbol == value {
+                        for _, pos := range table[index].followpos {
+                            nextStateSet[pos] = true
+                        }
+                    } 
+                }
+            }
+            
+            nextState = make([]int, 0, len(nextStateSet))
+            for key := range nextStateSet {
+                nextState = append(nextState, key)
             }
 
             strNextState := convertSliceIntToString(nextState)
@@ -267,7 +283,7 @@ func (self *AFD) Derivation(w string) bool {
 func convertSliceIntToString(slice []int) string {
     var sb strings.Builder
     for _, i := range slice {
-        sb.WriteString(fmt.Sprintf("%d", i))
+        sb.WriteString(fmt.Sprintf("%d,", i))
     }
 
     return sb.String()

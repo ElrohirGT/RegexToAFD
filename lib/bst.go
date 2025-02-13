@@ -31,20 +31,34 @@ func (b *BSTNode) insert(n *BSTNode) *BSTNode {
 	if b == nil {
 		return n
 	}
-	if n.Val.operator != nil {
-		b.left = b.left.insert(n)
-	} else {
-        if b.Val.operator != nil {
-            if b.right == nil && *b.Val.operator != ZERO_OR_MANY {
-		        b.right = b.right.insert(n)
-            } else {
-                b.left = b.left.insert(n)
-            }
-        } else {
-		    b.left = b.left.insert(n)
+
+    if n.Val.operator != nil && *n.Val.operator == OR {
+        b.right = b.right.insert(n)
+        return b
+    }
+
+    if b.Val.operator != nil && *b.Val.operator == OR && n.Val.value != nil {
+        if b.left == nil {
+			b.left = n
+			return b
 		}
-            
+		if b.right == nil {
+			b.right = n
+			return b
+		}    
+    }
+
+	if n.Val.operator != nil || b.Val.operator == nil {
+		b.left = b.left.insert(n)
+		return b
 	}
+
+	if b.right == nil && *b.Val.operator != ZERO_OR_MANY {
+		b.right = b.right.insert(n)
+	} else {
+		b.left = b.left.insert(n)
+	}
+
 	return b
 }
 
@@ -110,33 +124,45 @@ func ConvertTreeToTable(nodes []*BSTNode) []*TableRow {
         } else if v.Val.value != nil && !v.Val.value.HasValue() {
             newRow.nullable = true
         } else if *v.Val.operator == AND {
+            var c1 int
+
+            if nodes[i-1].Val.operator != nil {
+                if *nodes[i-1].Val.operator == OR {
+                    c1 = 4
+                } else {
+                    c1 = 2
+                }
+            } else {
+                c1 = 2
+            }
+
             //nullable
-            newRow.nullable = table[i-2].nullable == true && newRow.nullable == true
+            newRow.nullable = table[i-c1].nullable == true && table[i-1].nullable == true
 
             // firstpos
             if table[i-2].nullable == true {
-                union_slice := append(table[i-2].firtspos, table[i-1].firtspos ...)
+                union_slice := append(table[i-c1].firtspos, table[i-1].firtspos ...)
                 newRow.firtspos = append(newRow.firtspos, union_slice ...)
             } else {
-                newRow.firtspos = append(newRow.firtspos, table[i-2].firtspos ...)
+                newRow.firtspos = append(newRow.firtspos, table[i-c1].firtspos ...)
             }
 
             // lastpos
             if table[i-1].nullable == true {
-                union_slice := append(table[i-2].lastpos, table[i-1].lastpos ...)
+                union_slice := append(table[i-c1].lastpos, table[i-1].lastpos ...)
                 newRow.lastpos = append(newRow.lastpos, union_slice ...)
             } else {
                 newRow.lastpos = append(newRow.lastpos, table[i-1].lastpos ...)
             }
 
             // followpos
-            for _, pos := range table[i-2].lastpos {
+            for _, pos := range table[i-c1].lastpos {
                 table[pos].followpos = append(table[pos].followpos, table[i-1].firtspos ...)
             }
  
         } else if *v.Val.operator == OR {
             // nullable
-            newRow.nullable = table[i-2].nullable == true || newRow.nullable == true 
+            newRow.nullable = table[i-2].nullable == true || table[i-1].nullable == true 
             
             // firtspos
             union_slice := append(table[i-2].firtspos, table[i-1].firtspos ...)
