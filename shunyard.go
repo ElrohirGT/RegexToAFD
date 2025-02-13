@@ -4,6 +4,7 @@ package main
 // Here the "l" alias is being used!
 import (
 	"log"
+	"slices"
 	"strings"
 
 	l "github.com/ElrohirGT/RegexToAFD/lib"
@@ -230,13 +231,12 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				log.Default().Printf("Obtaining diff: `%s`", diff)
 
 				for idx, val := range diff {
+					if idx >= 1 {
+						tryToAppendWithPrecedence(stack, '|', output)
+					}
 
 					log.Default().Printf("Appending %c to output...", val)
 					*output = append(*output, l.CreateValueToken(rune(val)))
-
-					if idx < len(diff)-1 {
-						tryToAppendWithPrecedence(stack, '|', output)
-					}
 				}
 			}
 			negativeBuffer = strings.Builder{}
@@ -253,7 +253,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				// Concatenate previous expression with itself
 				// And add * operator at the end
 				tryToAppendWithPrecedence(stack, '.', output)
-				toPostFix(alph, &previousExpr, stack, output)
+				toPostFix(alph, &previousExpr, &shunStack{}, output)
 				tryToAppendWithPrecedence(stack, '*', output)
 
 				previousExprStack.AppendTop("+")
@@ -297,13 +297,13 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 
 							if state == IN_BRACKETS {
 								for j := byte(0); j <= (rangeEnd - rangeStart); j++ {
-									val := rune(rangeStart + j)
-									log.Default().Printf("Adding %c to output...", val)
-									*output = append(*output, l.CreateValueToken(val))
-
 									if j >= 1 {
 										tryToAppendWithPrecedence(stack, '|', output)
 									}
+
+									val := rune(rangeStart + j)
+									log.Default().Printf("Adding %c to output...", val)
+									*output = append(*output, l.CreateValueToken(val))
 								}
 
 								// We already parsed '-' and the other byte
@@ -390,13 +390,19 @@ func (alph *Alphabet) GetCharsNotIn(chars string) string {
 		charsMap[rune] = struct{}{}
 	}
 
-	out := strings.Builder{}
+	runes := []rune{}
 	for rune := range *alph {
 		_, found := charsMap[rune]
 
 		if !found {
-			out.WriteRune(rune)
+			runes = append(runes, rune)
 		}
+	}
+	slices.Sort(runes)
+
+	out := strings.Builder{}
+	for _, rune := range runes {
+		out.WriteRune(rune)
 	}
 
 	return out.String()
