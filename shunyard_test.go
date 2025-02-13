@@ -50,24 +50,28 @@ func toString(stream *[]lib.RX_Token) string {
 	return sb.String()
 }
 
+func assertEquals(t *testing.T, expected []lib.RX_Token, actual []lib.RX_Token, originalInput string) {
+	resultLength := len(actual)
+	expectedLength := len(expected)
+
+	if expectedLength != resultLength {
+		t.Errorf("The lengths don't match! %d != %d\nActual  : %+v\nExpected: %+v\nFailed on: %s",
+			expectedLength, resultLength, toString(&actual), toString(&expected), originalInput)
+	}
+
+	for i, expected := range expected {
+		value := actual[i]
+
+		if expected.Equals(value) {
+			t.Fatalf("The result doesn't match expected!\n%v != %v\nFailed on: %s", expected, value, originalInput)
+		}
+	}
+}
+
 func test(t *testing.T, info testInfo) {
 	result := info.alphabet.ToPostfix(info.input)
 
-	resultLength := len(result)
-	expectedLength := len(info.expected)
-	if expectedLength != resultLength {
-		t.Errorf("The lengths don't match! %d != %d\nResult: %+v\nExpected: %+v\nFailed on: %s",
-			expectedLength, resultLength, toString(&result), toString(&info.expected), info.input)
-	}
-
-	for i, expected := range info.expected {
-		value := result[i]
-
-		if expected.Equals(value) {
-			t.Fatalf("The result doesn't match expected!\n%v != %v\nFailed on: %s", expected, value, info.input)
-		}
-	}
-
+	assertEquals(t, info.expected, result, info.input)
 }
 
 func TestSimpleOr(t *testing.T) {
@@ -368,6 +372,13 @@ func TestBigNotRange(t *testing.T) {
 		},
 		alphabet: NewAlphabetFromString("abcdefghijklmnopqrstuvwxyz"),
 	})
+}
+
+func TestLogicEquivalence(t *testing.T) {
+	reducedResult := DEFAULT_ALPHABET.ToPostfix("(b+a)+")
+	expandedResult := DEFAULT_ALPHABET.ToPostfix("(bb*a)(bb*a)*")
+
+	assertEquals(t, reducedResult, expandedResult, "Postfix inconsistency: `(b+a)+` != `(bb*a)(bb*a)*`")
 }
 
 // func TestPasswordPolicy(t *testing.T) {
