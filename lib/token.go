@@ -1,5 +1,7 @@
 package lib
 
+import "fmt"
+
 type Operator int
 
 const (
@@ -66,4 +68,26 @@ func (self RX_Token) Equals(other RX_Token) bool {
 	}
 
 	return self.value.Equals(other.value)
+}
+
+func (self *RX_Token) ToString() string {
+	if self.GetOperator() != nil {
+		displayOp := "invalid"
+		switch *self.GetOperator() {
+		case OR:
+			displayOp = "OR"
+		case AND:
+			displayOp = "AND"
+		case ZERO_OR_MANY:
+			displayOp = "*"
+		}
+		return fmt.Sprintf("{ opr = %s }", displayOp)
+	}
+
+	val := "epsilon"
+	if self.GetValue().HasValue() {
+		val = self.GetValue().ToString()
+	}
+
+	return fmt.Sprintf("{ val = %s }", val)
 }

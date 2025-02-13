@@ -1,6 +1,9 @@
 package lib
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 type Optional[T any] struct {
 	isValid bool
@@ -35,4 +38,12 @@ func (self *Optional[T]) Equals(other *Optional[T]) bool {
 	}
 
 	return self.isValid == other.isValid && reflect.DeepEqual(self.value, other.value)
+}
+
+func (self *Optional[T]) ToString() string {
+	if !self.isValid {
+		return "nil"
+	}
+
+	return fmt.Sprintf("%#v", self.GetValue())
 }

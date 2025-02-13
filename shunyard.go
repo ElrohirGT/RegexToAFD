@@ -13,9 +13,8 @@ import (
 // Smaller means it has more priority
 var precedence = map[byte]int{
 	'|': 2, // OR Operator
-	'.': 2, // AND Operator
+	'.': 3, // AND Operator
 	'*': 1, // ZERO_OR_MORE
-	'?': 1, // ZERO_OR_ONE
 }
 
 func toOperator(self byte) l.Optional[l.Operator] {
@@ -57,17 +56,12 @@ func tryToAppendWithPrecedence(stack *l.Stack[byte], operator byte, output *[]l.
 		log.Default().Printf("Adding %c to stack!", operator)
 		stack.Push(operator)
 	} else {
-		for stackPrecedence < currentPrecedence {
+		for stackPrecedence <= currentPrecedence {
 			poppedRune := stack.Pop().GetValue()
 
-			if poppedRune == '?' {
-				*output = append(*output, l.CreateEpsilonValue())
-				*output = append(*output, l.CreateOperatorToken(l.OR))
-			} else {
-				op := toOperator(poppedRune)
-				log.Default().Printf("Adding %c to output...", poppedRune)
-				*output = append(*output, l.CreateOperatorToken(op.GetValue()))
-			}
+			op := toOperator(poppedRune)
+			log.Default().Printf("Adding %c to output...", poppedRune)
+			*output = append(*output, l.CreateOperatorToken(op.GetValue()))
 
 			if stack.Empty() {
 				break
@@ -122,7 +116,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				previousCanBeANDedTo = false
 			}
 
-		case '?', '*':
+		case '*':
 			if state == IN_NEGATIVE_BRACKETS {
 				negativeBuffer.WriteByte(currentChar)
 			} else {
@@ -132,6 +126,20 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				} else {
 					tryToAppendWithPrecedence(stack, currentChar, output)
 				}
+				previousCanBeANDedTo = true
+			}
+
+		case '?':
+			if state == IN_NEGATIVE_BRACKETS {
+				negativeBuffer.WriteByte(currentChar)
+			} else {
+				log.Default().Printf("'?' found! Concatenating with epsilon...")
+
+				// Concatenate previous expression with epsilon
+				// And add * operator at the end
+				tryToAppendWithPrecedence(stack, '|', output)
+				*output = append(*output, l.CreateEpsilonValue())
+
 				previousCanBeANDedTo = true
 			}
 
@@ -236,17 +244,22 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			state = NORMAL
 
 		case '+':
-			log.Default().Printf("'+' found! Adding OR operator")
-			previousExpr := previousExprStack.Pop().GetValue()
+			if state == IN_NEGATIVE_BRACKETS {
+				negativeBuffer.WriteByte(currentChar)
+			} else {
+				previousExpr := previousExprStack.Pop().GetValue()
+				log.Default().Printf("'+' found! Getting previous expression... `%s`", previousExpr)
 
-			log.Default().Printf("Recursing with: `%s`...", previousExpr)
-			toPostFix(alph, &previousExpr, &shunStack{}, output)
-			*output = append(*output, l.CreateOperatorToken(l.ZERO_OR_MANY))
-			*output = append(*output, l.CreateOperatorToken(l.AND))
+				// Concatenate previous expression with itself
+				// And add * operator at the end
+				tryToAppendWithPrecedence(stack, '.', output)
+				toPostFix(alph, &previousExpr, stack, output)
+				tryToAppendWithPrecedence(stack, '*', output)
 
-			previousExprStack.AppendTop("+")
-			previousExprStack.Push("")
-			previousCanBeANDedTo = true
+				previousExprStack.AppendTop("+")
+				previousExprStack.Push("")
+				previousCanBeANDedTo = true
+			}
 
 		case '\\':
 			nextChar := infixExpr[i+1]
@@ -351,10 +364,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 		}
 		op := toOperator(val)
 
-		if val == '?' {
-			*output = append(*output, l.CreateEpsilonValue())
-			*output = append(*output, l.CreateOperatorToken(l.OR))
-		} else if op.HasValue() {
+		if op.HasValue() {
 			log.Default().Printf("Adding %c to output...", val)
 			*output = append(*output, l.CreateOperatorToken(op.GetValue()))
 		}

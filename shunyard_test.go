@@ -16,36 +16,11 @@ type testInfo struct {
 
 func toString(stream *[]lib.RX_Token) string {
 	sb := strings.Builder{}
-	sb.WriteString("{ ")
+	sb.WriteString("[ ")
 	for _, token := range *stream {
-		if token.IsOperator() {
-			op := *token.GetOperator()
-			displayOp := "invalid"
-
-			switch op {
-			case lib.OR:
-				displayOp = "OR"
-			case lib.AND:
-				displayOp = "AND"
-			case lib.ZERO_OR_MANY:
-				displayOp = "*"
-			}
-
-			sb.WriteString(
-				fmt.Sprintf("[op: %s] ", displayOp),
-			)
-		} else {
-			val := "epsilon"
-			if token.GetValue().HasValue() {
-				val = string(token.GetValue().GetValue())
-			}
-
-			sb.WriteString(
-				fmt.Sprintf("[val: %s]", val),
-			)
-		}
+		sb.WriteString(fmt.Sprintf("%s ", token.ToString()))
 	}
-	sb.WriteString(" }")
+	sb.WriteString(" ]")
 
 	return sb.String()
 }
@@ -59,11 +34,16 @@ func assertEquals(t *testing.T, expected []lib.RX_Token, actual []lib.RX_Token, 
 			expectedLength, resultLength, toString(&actual), toString(&expected), originalInput)
 	}
 
-	for i, expected := range expected {
-		value := actual[i]
+	for i, expectedToken := range expected {
+		actualToken := actual[i]
 
-		if !expected.Equals(value) {
-			t.Fatalf("The result doesn't match expected!\n%v != %v\nFailed on: %s", expected, value, originalInput)
+		if !expectedToken.Equals(actualToken) {
+			t.Fatalf("The result doesn't match expected!\n%s != %s\nActual  : %+v\nExpected: %+v\nFailed on: %s",
+				expectedToken.ToString(),
+				actualToken.ToString(),
+				toString(&actual),
+				toString(&expected),
+				originalInput)
 		}
 	}
 }
@@ -94,8 +74,8 @@ func TestSimpleAnd(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
-			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
+			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
 		},
 		alphabet: DEFAULT_ALPHABET,
@@ -109,9 +89,9 @@ func TestSimpleCombination(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.OR),
 			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.AND),
-			lib.CreateOperatorToken(lib.OR),
 		},
 		alphabet: DEFAULT_ALPHABET,
 	})
@@ -124,10 +104,10 @@ func TestOptional(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.AND),
 			lib.CreateValueToken('c'),
 			lib.CreateEpsilonValue(),
 			lib.CreateOperatorToken(lib.OR),
-			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
 		alphabet: DEFAULT_ALPHABET,
@@ -156,9 +136,9 @@ func TestZeroOrMore(t *testing.T) {
 		expected: []lib.RX_Token{
 			lib.CreateValueToken('a'),
 			lib.CreateValueToken('b'),
+			lib.CreateOperatorToken(lib.AND),
 			lib.CreateValueToken('c'),
 			lib.CreateOperatorToken(lib.ZERO_OR_MANY),
-			lib.CreateOperatorToken(lib.AND),
 			lib.CreateOperatorToken(lib.AND),
 		},
 		alphabet: DEFAULT_ALPHABET,
