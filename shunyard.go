@@ -320,9 +320,13 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 					expr = previousExprStack.Peek().GetValue()
 				}
 				log.Default().Printf("The previous expression before deleting is: %s", expr)
-				previousExprStack.Pop()     // Deletes previous expression
-				previousExprStack.Push("[") // Adds [ context
-				previousExprStack.Push("")  // Adds inner [ ] context
+				previousExprStack.Pop() // Deletes previous expression
+				if state == IN_NEGATIVE_BRACKETS {
+					previousExprStack.AppendTop("[^")
+				} else {
+					previousExprStack.Push("[") // Adds [ context
+				}
+				previousExprStack.Push("") // Adds inner [ ] context
 			}
 
 		case ']':
@@ -335,8 +339,8 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			}
 			// Popping '['
 			stack.Pop()
-			previousExprStack.AppendTop("]")
 			previousExprStack.Pop() // Popping inner [ ] context
+			previousExprStack.AppendTop("]")
 
 			log.Default().Printf("Checking if IN_NEGATIVE_BRACKETS: %d == %d", state, IN_NEGATIVE_BRACKETS)
 			if state == IN_NEGATIVE_BRACKETS {
