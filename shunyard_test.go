@@ -425,6 +425,21 @@ func TestBracketsWithOneOrMoreOperator(t *testing.T) {
 	})
 }
 
+func TestPrinceRegexpTwo(t *testing.T) {
+	regexp := "b(a)?"
+	test(t, testInfo{
+		input: regexp,
+		expected: []lib.RX_Token{
+			lib.CreateValueToken('b'),
+			lib.CreateValueToken('a'),
+			lib.CreateEpsilonToken(),
+			lib.CreateOperatorToken(lib.OR),
+			lib.CreateOperatorToken(lib.AND),
+		},
+		alphabet: DEFAULT_ALPHABET,
+	})
+}
+
 // func TestPasswordPolicy(t *testing.T) {
 // 	regexp := "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$"
 //
