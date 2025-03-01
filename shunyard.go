@@ -250,6 +250,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 
 				previousCanBeANDedTo = true
 			}
+			previousExprStack.AppendTop("?")
 
 		case '(':
 			if state == IN_NEGATIVE_BRACKETS {
