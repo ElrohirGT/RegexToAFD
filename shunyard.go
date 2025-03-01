@@ -222,6 +222,8 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				previousCanBeANDedTo = false
 			}
 
+			previousExprStack.AppendTop("|")
+
 		case '*':
 			if state == IN_NEGATIVE_BRACKETS {
 				negativeBuffer.WriteByte(currentChar)
@@ -231,6 +233,7 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 				tryToAppendWithPrecedence(stack, currentChar, output)
 				previousCanBeANDedTo = true
 			}
+			previousExprStack.AppendTop("*")
 
 		case '?':
 			if state == IN_NEGATIVE_BRACKETS {
@@ -385,7 +388,9 @@ func toPostFix(alph *Alphabet, infixExpression *string, stack *shunStack, output
 			}
 
 		case '\\':
+			previousExprStack.AppendTop("\\")
 			nextChar := infixExpr[i+1]
+			previousExprStack.AppendTop(string(nextChar))
 			log.Default().Printf("Escape sequence found! Adding %c as a char...", nextChar)
 			if previousCanBeANDedTo {
 				appendValueToOutput(&infixExpr, &nextChar, &i, &previousCanBeANDedTo, &state, stack, output, &previousExprStack, &negativeBuffer)

@@ -30,7 +30,7 @@ func main() {
 	}
 
 	tokens := alph.ToPostfix(words[0])
-	reverseSlice(tokens)
+	// reverseSlice(tokens)
 	bst.Insertion(tokens)
 
 	table = l.ConvertTreeToTable(bst.List())
@@ -38,6 +38,8 @@ func main() {
 	afd = l.ConvertFromTableToAFD(table)
 	afd = MinimizeAFD(afd)
 
+	// (\.|\*)+([0-9]?)
+	// .*|+01|2|3|4|5|6|7|8|9|_|.
 	// Generar el SVG
 	svg := afd.ToSVG()
 

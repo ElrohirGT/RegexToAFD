@@ -294,3 +294,763 @@ func equalSlices(a, b []int) bool {
 	}
 	return true
 }
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestBST_Insertion(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		postfix []RX_Token
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// TODO: construct the receiver type.
+			var b BST
+			b.Insertion(tt.postfix)
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConvertTreeToTable(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		nodes []*BSTNode
+		want  []*TableRow
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertTreeToTable(tt.nodes)
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ConvertTreeToTable() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
