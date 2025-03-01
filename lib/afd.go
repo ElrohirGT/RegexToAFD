@@ -1,9 +1,9 @@
 package lib
 
 import (
-    "fmt"
-    "strings"
-    "strconv"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 type AFDState = string
@@ -182,121 +182,121 @@ func (self *AFDStateTable[T]) Get(a *AFDState, b *AFDState) (T, bool) {
 }
 
 func ConvertFromTableToAFD(table []*TableRow) *AFD {
-    afd := &AFD{
-        Transitions: make(map[AFDState]map[AlphabetInput]AFDState),
-        AcceptanceStates: NewSet[string](),
-    }
+	afd := &AFD{
+		Transitions:      make(map[AFDState]map[AlphabetInput]AFDState),
+		AcceptanceStates: NewSet[string](),
+	}
 
-    alphabet := NewSet[string]()
+	alphabet := NewSet[string]()
 
-    // recognizes the alphabet of the afd
-    for i := range table {
-        if table[i].simbol != "" && table[i].simbol != "°" {
-            alphabet.Add(table[i].simbol)
-        }
-    }
+	// recognizes the alphabet of the afd
+	for i := range table {
+		if table[i].simbol != "" && table[i].simbol != "#" {
+			alphabet.Add(table[i].simbol)
+		}
+	}
 
-    // Creates trap state
-    trapState := "TRAP"
-    afd.Transitions[trapState] = make (map[AlphabetInput]AFDState)
-    for value := range alphabet {
-        afd.Transitions[trapState][value] = trapState
-    }
+	// Creates trap state
+	trapState := "TRAP"
+	afd.Transitions[trapState] = make(map[AlphabetInput]AFDState)
+	for value := range alphabet {
+		afd.Transitions[trapState][value] = trapState
+	}
 
-    // Set AFD initial state
-    afd.InitialState = convertSliceIntToString(table[len(table) -1].firtspos)
-    
-    var states Queue[string]
-    states.Enqueue(afd.InitialState)
+	// Set AFD initial state
+	afd.InitialState = convertSliceIntToString(table[len(table)-1].firstpos)
 
-    visited := NewSet[string]()
-    visited.Add(afd.InitialState)
+	var states Queue[string]
+	states.Enqueue(afd.InitialState)
 
-    // Determines transitions for AFD
-    for !states.IsEmpty() {
-        currentState, _ := states.Dequeue()
+	visited := NewSet[string]()
+	visited.Add(afd.InitialState)
 
-        for value := range alphabet {
-            var nextState []int
-            nextStateSet := make(map[int]bool)
-            for _, strIndex := range strings.Split(currentState, ",") {
-                if strIndex != "" {
-                    index, err := strconv.Atoi(strIndex)
-                    if err != nil {
-                        fmt.Println("Error converting to string:", err)
-                        continue
-                    }
+	// Determines transitions for AFD
+	for !states.IsEmpty() {
+		currentState, _ := states.Dequeue()
 
-                    if table[index].simbol == value {
-                        for _, pos := range table[index].followpos {
-                            nextStateSet[pos] = true
-                        }
-                    } 
-                }
-            }
-            
-            nextState = make([]int, 0, len(nextStateSet))
-            for key := range nextStateSet {
-                nextState = append(nextState, key)
-            }
+		for value := range alphabet {
+			var nextState []int
+			nextStateSet := make(map[int]bool)
+			for _, strIndex := range strings.Split(currentState, ",") {
+				if strIndex != "" {
+					index, err := strconv.Atoi(strIndex)
+					if err != nil {
+						fmt.Println("Error converting to string:", err)
+						continue
+					}
 
-            strNextState := convertSliceIntToString(nextState)
-            if strNextState == "" {
-                strNextState = trapState
-            }
+					if table[index].simbol == value {
+						for _, pos := range table[index].followpos {
+							nextStateSet[pos] = true
+						}
+					}
+				}
+			}
 
-            if _, exists := afd.Transitions[currentState]; !exists {
-                    afd.Transitions[currentState] = make(map[AlphabetInput]AFDState)
-            }
+			nextState = make([]int, 0, len(nextStateSet))
+			for key := range nextStateSet {
+				nextState = append(nextState, key)
+			}
 
-            afd.Transitions[currentState][value] = strNextState
+			strNextState := convertSliceIntToString(nextState)
+			if strNextState == "" {
+				strNextState = trapState
+			}
 
-            if strNextState != trapState && !visited.Contains(strNextState) {
-                visited.Add(strNextState)
-                states.Enqueue(strNextState)
-            }
-        }
+			if _, exists := afd.Transitions[currentState]; !exists {
+				afd.Transitions[currentState] = make(map[AlphabetInput]AFDState)
+			}
 
-    }
+			afd.Transitions[currentState][value] = strNextState
 
-    // Determines final states
-    finalNode := len(table)-2
+			if strNextState != trapState && !visited.Contains(strNextState) {
+				visited.Add(strNextState)
+				states.Enqueue(strNextState)
+			}
+		}
 
-    for i := range visited {
-        if strings.Contains(i, fmt.Sprintf("%d", finalNode)) {
-            afd.AcceptanceStates.Add(i)
-        }
-    }
+	}
 
-    return afd
+	// Determines final states
+	finalNode := len(table) - 2
+
+	for i := range visited {
+		if strings.Contains(i, fmt.Sprintf("%d", finalNode)) {
+			afd.AcceptanceStates.Add(i)
+		}
+	}
+
+	return afd
 }
 
 func (self *AFD) Derivation(w string) bool {
-    state := self.InitialState
-    for _, ch := range w {
-        state = self.Transitions[state][string(ch)]
-    }
+	state := self.InitialState
+	for _, ch := range w {
+		state = self.Transitions[state][string(ch)]
+	}
 
-    return self.AcceptanceStates.Contains(state)
+	return self.AcceptanceStates.Contains(state)
 }
 
 func convertSliceIntToString(slice []int) string {
-    var sb strings.Builder
-    for _, i := range slice {
-        sb.WriteString(fmt.Sprintf("%d,", i))
-    }
+	var sb strings.Builder
+	for _, i := range slice {
+		sb.WriteString(fmt.Sprintf("%d,", i))
+	}
 
-    return sb.String()
+	return sb.String()
 }
 
 func stringToIntSlice(str string) []int {
-    var intSlice []int
-    for _, s := range str {
-        num, err := strconv.Atoi(string(s))
-        if err != nil {
-            return []int{}
-        }
-        intSlice = append(intSlice, num)
-    }
-    return intSlice
+	var intSlice []int
+	for _, s := range str {
+		num, err := strconv.Atoi(string(s))
+		if err != nil {
+			return []int{}
+		}
+		intSlice = append(intSlice, num)
+	}
+	return intSlice
 }
