@@ -4,16 +4,38 @@ type BSTNode struct {
 	Key int
 	Val RX_Token
 
-	father *BSTNode
+	father int
 
-	left  *BSTNode
-	right *BSTNode
+	left  int
+	right int
 
 	extraProperties TableRow
 }
 
+func CreateBSTNode(val RX_Token) BSTNode {
+	return BSTNode{
+		Val: val,
+
+		father: -1,
+		left:   -1,
+		right:  -1,
+	}
+}
+
 type BST struct {
-	root *BSTNode
+	nodes []BSTNode
+}
+
+func (b BSTNode) Copy() BSTNode {
+	var other BSTNode
+	other.Key = b.Key
+	other.Val = b.Val
+	other.father = b.father
+	other.left = b.left
+	other.right = b.right
+	other.extraProperties = b.extraProperties
+
+	return other
 }
 
 type TableRow struct {
@@ -29,86 +51,52 @@ func (b *BSTNode) IsNullable() bool {
 }
 
 func (b *BSTNode) IsLeaf() bool {
-	return b.left == nil && b.right == nil
-}
-
-func (b *BST) Insert(n *BSTNode) {
-	if b.root == nil {
-		b.root = n
-		return
-	}
-	b.root.insert(n)
-}
-
-func (b *BSTNode) insert(n *BSTNode) *BSTNode {
-	if b == nil {
-		return n
-	}
-
-	if n.Val.operator != nil && *n.Val.operator == OR {
-		b.right = b.right.insert(n)
-		return b
-	}
-
-	if b.Val.operator != nil && *b.Val.operator == OR && n.Val.value != nil {
-		if b.left == nil {
-			b.left = n
-			return b
-		}
-		if b.right == nil {
-			b.right = n
-			return b
-		}
-	}
-
-	if n.Val.operator != nil || b.Val.operator == nil {
-		b.left = b.left.insert(n)
-		return b
-	}
-
-	if b.right == nil && *b.Val.operator != ZERO_OR_MANY {
-		b.right = b.right.insert(n)
-	} else {
-		b.left = b.left.insert(n)
-	}
-
-	return b
+	return b.left == -1 && b.right == -1
 }
 
 func (b *BST) List() []*BSTNode {
-	if b.root == nil {
-		return nil
-	}
 
 	// FIXME: This operation changes the tree everytime because the values are references!
-	son := b.root
-	for son.left != nil {
-		son = son.left
+	// Should be fixed now...
+	son := 0
+	for {
+		if b.nodes[son].left < 0 {
+			break
+		}
+
+		son = b.nodes[son].left
 	}
 
 	result := []*BSTNode{}
 
-	for son != nil {
-		result = append(result, son)
+	for {
+		result = append(result, &b.nodes[son])
 
-		if son.father != nil {
-			brother := son.father.right
-			if brother != nil {
-				result = append(result, son.father.right)
+		father := b.nodes[son].father
+		if father >= 0 {
+			brother := b.nodes[father].right
+			if brother >= 0 {
+				result = append(result, &b.nodes[brother])
 			}
 		}
 
-		son = son.father
-
+		if father >= 0 {
+			break
+		}
+		son = father
 	}
 
 	return result
 }
 
 func (b *BST) Insertion(postfix []RX_Token) {
-	var stack Stack[BSTNode]
-	for i, v := range postfix {
-		node := BSTNode{Key: i, Val: v}
+	var stack Stack[int]
+	var nodes []BSTNode
+
+	for _, v := range postfix {
+		node := CreateBSTNode(v)
+		nodes = append(nodes, node)
+		i := len(nodes) - 1
 
 		if v.IsOperator() {
 			op := *v.GetOperator()
@@ -117,28 +105,25 @@ func (b *BST) Insertion(postfix []RX_Token) {
 				right := stack.Pop().GetValue()
 				left := stack.Pop().GetValue()
 
-				node.left = &left
-				node.right = &right
+				node.left = left
+				node.right = right
 
-				left.father = &node
-				right.father = &node
+				nodes[left].father = i
+				nodes[right].father = i
 
 			case ZERO_OR_MANY:
 				left := stack.Pop().GetValue()
 
-				node.left = &left
-				left.father = &node
+				node.left = i
+				nodes[left].father = i
 			}
 		}
 
-		stack.Push(node)
+		stack.Push(i)
 	}
-
-	root := stack.Pop().GetValue()
-	b.root = &root
 }
 
-func ConvertTreeToTable(nodes []*BSTNode) []*TableRow {
+func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
 	table := []*TableRow{}
 
 	for _, node := range nodes {
@@ -162,40 +147,48 @@ func ConvertTreeToTable(nodes []*BSTNode) []*TableRow {
 			op := *node.Val.GetOperator()
 			switch op {
 			case AND:
-				nullable := node.left.IsNullable() && node.right.IsNullable()
-				firstPos := node.left.extraProperties.firstpos
-				if node.left.IsNullable() {
-					firstPos = append(firstPos, node.right.extraProperties.firstpos...)
+				left := tree.nodes[node.left]
+				right := tree.nodes[node.right]
+
+				nullable := left.IsNullable() && right.IsNullable()
+				firstPos := left.extraProperties.firstpos
+				if left.IsNullable() {
+					firstPos = append(firstPos, right.extraProperties.firstpos...)
 				}
 
-				lastPos := node.right.extraProperties.lastpos
-				if node.right.IsNullable() {
-					lastPos = append(lastPos, node.left.extraProperties.lastpos...)
+				lastPos := right.extraProperties.lastpos
+				if right.IsNullable() {
+					lastPos = append(lastPos, left.extraProperties.lastpos...)
 				}
 				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
 
-				for i := range node.left.extraProperties.lastpos {
+				for i := range left.extraProperties.lastpos {
 					node_i := nodes[i]
 					if node_i.IsLeaf() {
-						node_i.extraProperties.followpos = append(node_i.extraProperties.followpos, node.right.extraProperties.firstpos...)
+						node_i.extraProperties.followpos = append(node_i.extraProperties.followpos, right.extraProperties.firstpos...)
 					}
 				}
 
 			case OR:
-				nullable := node.left.IsNullable() || node.right.IsNullable()
-				firstPos := node.left.extraProperties.firstpos
-				firstPos = append(firstPos, node.right.extraProperties.firstpos...)
+				left := tree.nodes[node.left]
+				right := tree.nodes[node.right]
 
-				lastPos := node.right.extraProperties.lastpos
-				lastPos = append(lastPos, node.left.extraProperties.lastpos...)
+				nullable := left.IsNullable() || right.IsNullable()
+				firstPos := left.extraProperties.firstpos
+				firstPos = append(firstPos, right.extraProperties.firstpos...)
+
+				lastPos := right.extraProperties.lastpos
+				lastPos = append(lastPos, left.extraProperties.lastpos...)
 
 				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
 
 			case ZERO_OR_MANY:
-				nullable := true
-				firstPos := node.left.extraProperties.firstpos
+				left := tree.nodes[node.left]
 
-				lastPos := node.left.extraProperties.lastpos
+				nullable := true
+				firstPos := left.extraProperties.firstpos
+
+				lastPos := left.extraProperties.lastpos
 
 				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
 
