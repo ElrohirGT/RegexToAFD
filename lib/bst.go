@@ -95,8 +95,7 @@ func (b *BST) Insertion(postfix []RX_Token) {
 
 	for _, v := range postfix {
 		node := CreateBSTNode(v)
-		nodes = append(nodes, node)
-		i := len(nodes) - 1
+		i := len(nodes)
 
 		if v.IsOperator() {
 			op := *v.GetOperator()
@@ -114,25 +113,26 @@ func (b *BST) Insertion(postfix []RX_Token) {
 			case ZERO_OR_MANY:
 				left := stack.Pop().GetValue()
 
-				node.left = i
+				node.left = left
 				nodes[left].father = i
 			}
 		}
 
 		stack.Push(i)
+		nodes = append(nodes, node)
 	}
 
     b.nodes = nodes
 }
 
-func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
+func ConvertTreeToTable(tree *BST) []*TableRow {
 	table := []*TableRow{}
 
-	for _, node := range nodes {
+	for i, node := range tree.nodes {
 		if node.IsLeaf() {
 			nullable := !(node.Val.IsValue() && node.Val.GetValue().HasValue())
-			firstPos := []int{node.Key}
-			lastPos := []int{node.Key}
+			firstPos := []int{i}
+			lastPos := []int{i}
 
 			var simbol string
 			if !nullable {
@@ -143,8 +143,8 @@ func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
 				nullable: nullable, firstpos: firstPos, lastpos: lastPos, simbol: simbol,
 			}
 
-			node.extraProperties = row
-			table = append(table, &row)
+			tree.nodes[i].extraProperties = row
+			//table = append(table, &row)
 		} else {
 			op := *node.Val.GetOperator()
 			switch op {
@@ -162,12 +162,16 @@ func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
 				if right.IsNullable() {
 					lastPos = append(lastPos, left.extraProperties.lastpos...)
 				}
-				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
+				//table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
 
-				for i := range left.extraProperties.lastpos {
-					node_i := nodes[i]
+                row := TableRow{
+			    	nullable: nullable, firstpos: firstPos, lastpos: lastPos, simbol: "",
+			    }
+                tree.nodes[i].extraProperties = row
+				for _, i := range left.extraProperties.lastpos {
+					node_i := tree.nodes[i]
 					if node_i.IsLeaf() {
-						node_i.extraProperties.followpos = append(node_i.extraProperties.followpos, right.extraProperties.firstpos...)
+						tree.nodes[i].extraProperties.followpos = append(tree.nodes[i].extraProperties.followpos, right.extraProperties.firstpos...)
 					}
 				}
 
@@ -182,7 +186,11 @@ func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
 				lastPos := right.extraProperties.lastpos
 				lastPos = append(lastPos, left.extraProperties.lastpos...)
 
-				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
+				//table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
+                row := TableRow{
+			    	nullable: nullable, firstpos: firstPos, lastpos: lastPos, simbol: "",
+			    }
+                tree.nodes[i].extraProperties = row
 
 			case ZERO_OR_MANY:
 				left := tree.nodes[node.left]
@@ -192,17 +200,27 @@ func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
 
 				lastPos := left.extraProperties.lastpos
 
-				table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
+				//table = append(table, &TableRow{nullable: nullable, firstpos: firstPos, lastpos: lastPos})
+                row := TableRow{
+			    	nullable: nullable, firstpos: firstPos, lastpos: lastPos, simbol: "",
+			    }
+                tree.nodes[i].extraProperties = row
 
-				for i := range lastPos {
-					node_i := nodes[i]
+				for _, i := range lastPos {
+					node_i := tree.nodes[i]
 					if node_i.IsLeaf() {
-						node_i.extraProperties.followpos = append(node_i.extraProperties.followpos, firstPos...)
+						tree.nodes[i].extraProperties.followpos = append(tree.nodes[i].extraProperties.followpos, firstPos...)
 					}
 				}
 			}
 		}
 	}
+
+    for _,n := range tree.nodes {
+			row := n.extraProperties
+
+			table = append(table, &row)       
+    }
 
 	// sets Leaf i first
 	// for i, v := range nodes {

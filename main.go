@@ -33,8 +33,8 @@ func main() {
 	// reverseSlice(tokens)
 	bst.Insertion(tokens)
 
-	list := bst.List()
-	table = l.ConvertTreeToTable(bst, list)
+	//list := bst.List()
+	table = l.ConvertTreeToTable(bst)
 
 	afd = l.ConvertFromTableToAFD(table)
 	afd = MinimizeAFD(afd)
