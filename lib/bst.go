@@ -121,6 +121,8 @@ func (b *BST) Insertion(postfix []RX_Token) {
 
 		stack.Push(i)
 	}
+
+    b.nodes = nodes
 }
 
 func ConvertTreeToTable(tree *BST, nodes []*BSTNode) []*TableRow {
