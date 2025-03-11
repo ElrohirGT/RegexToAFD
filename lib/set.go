@@ -26,6 +26,13 @@ func (self *Set[T]) Add(val T) bool {
 	return !alreadyAdded
 }
 
+func (self *Set[T]) Remove(val T) *Set[T] {
+    set := *self
+    delete(set, val)
+
+    return &set
+}
+
 func NewSet[T comparable]() Set[T] {
     return make(Set[T])
 }
