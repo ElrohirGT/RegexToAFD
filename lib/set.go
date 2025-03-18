@@ -33,6 +33,25 @@ func (self *Set[T]) Remove(val T) *Set[T] {
     return &set
 }
 
+func (self *Set[T]) IsEmpty() bool {
+    return len(*self) == 0
+}
+
+func (self *Set[T]) Clear() {
+    for k := range *self {
+        delete(*self, k)
+    }
+}
+
+func (self *Set[T]) ToSlice() []T {
+    slice := make([]T, 0, len(*self))
+    for k := range *self {
+        slice = append(slice, k)
+    }
+
+    return slice
+}
+
 func NewSet[T comparable]() Set[T] {
     return make(Set[T])
 }
