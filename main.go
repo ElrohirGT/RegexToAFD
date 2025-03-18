@@ -29,6 +29,8 @@ func main() {
 		words = append(words, scanner.Text())
 	}
 
+    words[0] = words[0] + "#"
+
 	tokens := alph.ToPostfix(words[0])
 	// reverseSlice(tokens)
 	bst.Insertion(tokens)
